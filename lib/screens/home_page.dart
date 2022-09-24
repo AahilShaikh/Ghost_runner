@@ -18,7 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final Stream<QuerySnapshot> data =
       FirebaseFirestore.instance.collection('Updates').snapshots();
-  List<Map<String, dynamic>> firestoreData = {};
+  List<Map<String, dynamic>>? firestoreData;
   String? email = FirebaseAuth.instance.currentUser?.email;
 
   void checkData() {
@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
             .get()
             .then((everything) {
           for (var data in everything.docs) {
-            firestoreData.add({
+            firestoreData?.add({
               "LocationData": data['LocationData'],
               "elapsed_time_intervals": data['elapsed_time_intervals'],
               "name": data['name'],
@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (firestoreData[1]["LocationData"] != null){
+    if (firestoreData != null){
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
