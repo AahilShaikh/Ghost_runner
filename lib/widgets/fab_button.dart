@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wwp_hacks_project/screens/add_new_run_page.dart';
+import 'package:wwp_hacks_project/screens/race_page.dart';
 import 'package:wwp_hacks_project/services/database_manager.dart';
 import 'package:wwp_hacks_project/widgets/action_button.dart';
 
@@ -35,7 +36,8 @@ class FABBottomSheetButton extends StatelessWidget {
                             return ListTile(
                               title: Text(locations[i]),
                               onTap: () {
-                                DatabaseManager.getLocationData(locations[i]).then((value) => print(value));
+                                
+                                DatabaseManager.getLocationData(locations[i]).then((value) => Navigator.of(context).push(MaterialPageRoute(builder: (context) => RacePage(value))));
                               },
                             );
                           },

@@ -7,25 +7,31 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:wwp_hacks_project/constants/palette.dart';
+import 'package:wwp_hacks_project/functions/ai.dart';
 
-import '../services/database_manager.dart';
 import '../services/location.dart';
 import '../widgets/action_button.dart';
 
-class AddNewRunPage extends StatefulWidget {
-  const AddNewRunPage({Key? key}) : super(key: key);
+class RacePage extends StatefulWidget {
+  final LinkedHashMap<LatLng, int> ghostData;
+  late final List<LatLng> path;
+
+  RacePage(this.ghostData, {Key? key}) : super(key: key) {
+    path = ghostData.keys.toList();
+  }
 
   @override
-  State<AddNewRunPage> createState() => _AddNewRunPageState();
+  State<RacePage> createState() => _RacePageState();
 }
 
-class _AddNewRunPageState extends State<AddNewRunPage> {
+class _RacePageState extends State<RacePage> {
   //map variables
-  MapController? mapController;
   final LocationSettings locationSettings = const LocationSettings(
     accuracy: LocationAccuracy.best,
     distanceFilter: 0,
   );
+  int ghostCurrentLocation = 0;
 
   //location variables
   late final Stream<Position> currentLocationStream;
@@ -38,8 +44,19 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
   late final Stopwatch timer;
 
   double distanceTraveled = 0;
+  int currentIndexOnPath = 0;
 
-  final Distance distance = const Distance();
+  ///Release the ghost's position at every millisecond
+  Stream<LatLng> ghostStream() async* {
+    int count = 0;
+    int nextTimeInterval = 0;
+    while (count + 1 < widget.ghostData.length) {
+      await Future.delayed(Duration(milliseconds: nextTimeInterval));
+      nextTimeInterval = widget.ghostData.values.toList()[count + 1] - widget.ghostData.values.toList()[count];
+      yield widget.ghostData.keys.toList()[count];
+      count++;
+    }
+  }
 
   @override
   void initState() {
@@ -47,21 +64,11 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
     checkLocationPermissions(context);
     //stream of current location as it updates
     currentLocationStream = Geolocator.getPositionStream(locationSettings: locationSettings).asBroadcastStream();
-    //whenever the stream updates do the following:
+    currentLocationSubscription = currentLocationStream.listen((Position? pos) {});
 
     _runNameController = TextEditingController();
     timer = Stopwatch();
     timer.start();
-    currentLocationSubscription = currentLocationStream.listen((Position? pos) {
-      if (mapController != null) {
-        mapController!.move(LatLng(pos!.latitude, pos.longitude), mapController!.zoom);
-      }
-      // if (path.isNotEmpty) {
-      //   setState(() {
-      //     distanceTraveled += distance.as(LengthUnit.Mile, path.keys.last, LatLng(pos!.latitude, pos.longitude));
-      //   });
-      // }
-    });
   }
 
   @override
@@ -120,12 +127,6 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                                             ActionButton(
                                               child: const Text('Finish Run'),
                                               onPressed: () {
-                                                DatabaseManager.addNewRunLocation(_runNameController.text, {
-                                                  "Location Data": latlngToGeoPoint(path.keys.toList()),
-                                                  "elapsed_time_intervals": path.values.toList(),
-                                                  'name': _runNameController.text
-                                                });
-                                                print("Original Path: $path");
                                                 Navigator.pop(context);
                                                 Navigator.pop(context);
                                               },
@@ -134,7 +135,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                                               child: const Text('Cancel'),
                                               onPressed: () {
                                                 currentLocationSubscription.resume();
-                                                timer.stop();
+                                                timer.start();
                                               },
                                             )
                                           ],
@@ -157,7 +158,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                 children: [
                   TileLayer(
                     urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c'],
+                    subdomains: const ['a', 'b', 'c'],
                     userAgentPackageName: 'com.example.ghost_trainer',
                   ),
                   StreamBuilder(
@@ -168,19 +169,41 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                         }
                         if (snapshot.data != null) {
                           Position data = snapshot.data as Position;
-                          path[LatLng(data.latitude, data.longitude)] = timer.elapsedMilliseconds;
+                          if (calcDistanceAsFeet(LatLng(data.latitude, data.longitude), widget.path[currentIndexOnPath]) < 5) {
+                            path[LatLng(data.latitude, data.longitude)] = timer.elapsedMilliseconds;
+                            currentIndexOnPath++;
+                          }
                         }
                         return PolylineLayer(
                           polylineCulling: true,
                           polylines: [
+                            Polyline(strokeWidth: 4.0, points: widget.path, color: Colors.grey[800]!),
                             Polyline(
                               strokeWidth: 4.0,
                               points: path.keys.toList(),
-                              gradientColors: [Colors.black, Colors.blue],
+                              color: lightGreen,
                             ),
                           ],
                         );
                       }),
+                  StreamBuilder(
+                    stream: ghostStream(),
+                    builder: ((context, snapshot) {
+                      LatLng ghostLocation = (snapshot.data ?? LatLng(0, 0)) as LatLng;
+                      return MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: ghostLocation,
+                            width: 20,
+                            height: 20,
+                            builder: (context) => Container(
+                              decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
                   StreamBuilder(
                     stream: currentLocationStream,
                     builder: (context, snapshot) {

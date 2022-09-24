@@ -29,7 +29,6 @@ class DatabaseManager {
       Map<String, dynamic> data = value.data() as Map<String, dynamic>;
       List<dynamic> location = data['Location Data'];
       List<dynamic> time = data['elapsed_time_intervals'];
-      print("data: $location");
       for (int i = 0; i < time.length; i++) {
         GeoPoint point = location[i];
         result[LatLng(point.latitude, point.longitude)] = time[i];
