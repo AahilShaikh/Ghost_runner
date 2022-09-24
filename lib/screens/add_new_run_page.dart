@@ -10,7 +10,7 @@ import 'package:wakelock/wakelock.dart';
 
 import '../services/database_manager.dart';
 import '../services/location.dart';
-import '../widgets/buttons.dart';
+import '../widgets/action_button.dart';
 
 class AddNewRunPage extends StatefulWidget {
   const AddNewRunPage({Key? key}) : super(key: key);
@@ -30,7 +30,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
   //location variables
   late final Stream<Position> currentLocationStream;
   late final StreamSubscription<Position> currentLocationSubscription;
-  final Map<LatLng, int> path = {};
+  final LinkedHashMap<LatLng, int> path = LinkedHashMap();
 
   //Run name
   late final TextEditingController _runNameController;
@@ -55,6 +55,9 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
     currentLocationSubscription = currentLocationStream.listen((Position? pos) {
       if (mapController != null) {
         mapController!.move(LatLng(pos!.latitude, pos.longitude), mapController!.zoom);
+        setState(() {
+          distanceTraveled += distance.as(LengthUnit.Mile, path.keys.last, LatLng(pos.latitude, pos.longitude));
+        });
       }
     });
   }
@@ -77,9 +80,9 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                 children: [
                   Row(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(32, 16, 0, 0),
-                        child: Text("Meters traveled: Something"),
+                       Padding(
+                        padding: const EdgeInsets.fromLTRB(32, 16, 0, 0),
+                        child: Text("Meters traveled: $distanceTraveled"),
                       ),
                       const Spacer(),
                       Padding(

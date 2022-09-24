@@ -5,7 +5,7 @@ import 'package:wwp_hacks_project/screens/login_page.dart';
 
 import '../constants/palette.dart';
 import '../services/login_validators.dart';
-import '../widgets/buttons.dart';
+import '../widgets/action_button.dart';
 import 'home_page.dart';
 
 class SignUpPage extends StatefulWidget {
