@@ -24,17 +24,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const Text("Hi"),
-          TextButton(
-            child: const Text("Sign out"),
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
-            },
-          )
-        ],
+      body: Center(
+        child: Column(
+          children: [
+            const Text("Hi"),
+            TextButton(
+              child: const Text("Sign out"),
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
+              },
+            )
+          ],
+        ),
       ),
       floatingActionButton: const FABBottomSheetButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
