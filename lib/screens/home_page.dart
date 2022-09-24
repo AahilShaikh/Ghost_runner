@@ -57,6 +57,35 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (firestoreData[1]["LocationData"] != null){
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: <Widget>[
+            IconButton(
+              color: Colors.black,
+              icon: const Icon(Icons.account_circle_sharp),
+              tooltip: 'Sign Out',
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const SignUpPage()));
+              },
+            ),
+          ],
+        ),
+        body: Center(
+          child: Column(
+            children: const [
+              Text("fard")
+            ],
+          ),
+        ),
+        floatingActionButton: const FABBottomSheetButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
