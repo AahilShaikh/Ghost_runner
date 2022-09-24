@@ -30,10 +30,16 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
   //location variables
   late final Stream<Position> currentLocationStream;
   late final StreamSubscription<Position> currentLocationSubscription;
-  final DoubleLinkedQueue<LatLng> path = DoubleLinkedQueue();
+  final Map<LatLng, int> path = {};
 
   //Run name
   late final TextEditingController _runNameController;
+
+  late final Stopwatch timer;
+
+  double distanceTraveled = 0;
+
+  final Distance distance = const Distance();
 
   @override
   void initState() {
@@ -42,13 +48,15 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
     //stream of current location as it updates
     currentLocationStream = Geolocator.getPositionStream(locationSettings: locationSettings).asBroadcastStream();
     //whenever the stream updates do the following:
+
+    _runNameController = TextEditingController();
+    timer = Stopwatch();
+    timer.start();
     currentLocationSubscription = currentLocationStream.listen((Position? pos) {
       if (mapController != null) {
-        // mapController!.moveAndRotate(LatLng(pos!.latitude, pos.longitude), mapController!.zoom, pos.heading);
         mapController!.move(LatLng(pos!.latitude, pos.longitude), mapController!.zoom);
       }
     });
-    _runNameController = TextEditingController();
   }
 
   @override
@@ -88,6 +96,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                             ),
                             onPressed: () {
                               currentLocationSubscription.pause();
+                              timer.stop();
                               showDialog(
                                   context: context,
                                   builder: (context) {
@@ -106,14 +115,20 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                                             ActionButton(
                                               child: const Text('Finish Run'),
                                               onPressed: () {
-                                                DatabaseManager.addNewRunLocation(
-                                                    _runNameController.text, {"Location Data": path.toList(), 'name': _runNameController.text});
+                                                DatabaseManager.addNewRunLocation(_runNameController.text, {
+                                                  "Location Data": latlngToGeoPoint(path.keys.toList()),
+                                                  "elapsed_time_intervals": path.values.toList(),
+                                                  'name': _runNameController.text
+                                                });
+                                                Navigator.pop(context);
+                                                Navigator.pop(context);
                                               },
                                             ),
                                             TextButton(
                                               child: const Text('Cancel'),
                                               onPressed: () {
                                                 currentLocationSubscription.resume();
+                                                timer.stop();
                                               },
                                             )
                                           ],
@@ -147,14 +162,14 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                         }
                         if (snapshot.data != null) {
                           Position data = snapshot.data as Position;
-                          path.addLast(LatLng(data.latitude, data.longitude));
+                          path[LatLng(data.latitude, data.longitude)] = timer.elapsedMilliseconds;
                         }
                         return PolylineLayer(
                           polylineCulling: true,
                           polylines: [
                             Polyline(
                               strokeWidth: 4.0,
-                              points: path.toList(),
+                              points: path.keys.toList(),
                               gradientColors: [Colors.black, Colors.blue],
                             ),
                           ],
