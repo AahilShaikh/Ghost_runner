@@ -80,7 +80,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                 children: [
                   Row(
                     children: [
-                       Padding(
+                      Padding(
                         padding: const EdgeInsets.fromLTRB(32, 16, 0, 0),
                         child: Text("Meters traveled: $distanceTraveled"),
                       ),
@@ -123,6 +123,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                                                   "elapsed_time_intervals": path.values.toList(),
                                                   'name': _runNameController.text
                                                 });
+                                                print("Original Path: $path");
                                                 Navigator.pop(context);
                                                 Navigator.pop(context);
                                               },
