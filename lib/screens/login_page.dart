@@ -43,19 +43,19 @@ class _LoginPageState extends State<LoginPage> {
       body: Container(
         decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('assets/images/background_waves.png'), fit: BoxFit.fill)),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
                 flex: 2,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(32.0),
+                      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 32),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Login", textAlign: TextAlign.left, style: Theme.of(context).textTheme.headline1),
+                          Text("Login", style: Theme.of(context).textTheme.headline1),
                           const Text(
                             'Please sign in to continue',
                             style: TextStyle(fontSize: 20, color: Colors.grey),
@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: const [
-                          Text('Sign up'),
+                          Text('Login'),
                           Icon(
                             Icons.keyboard_arrow_right_rounded,
                             color: Colors.white,
@@ -106,21 +106,10 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       onPressed: () {
-                        if (!isValidEmail(_emailController.text)) {
+                        if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                             content: Text(
-                              'Invalid email',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            backgroundColor: pastelGreen,
-                            duration: Duration(seconds: 1),
-                          ));
-                          return;
-                        }
-                        if (!isValidPassword(_passwordController.text)) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                              'Invalid password. Must have 1 upper case, 1 lower case, 1 special character, 1 digit, and  be 8 characters long',
+                              'Please fill in your email and password',
                               style: TextStyle(color: Colors.black),
                             ),
                             backgroundColor: pastelGreen,
@@ -128,22 +117,41 @@ class _LoginPageState extends State<LoginPage> {
                           ));
                           return;
                         }
-                        auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+                        //TODO erorr handling
+                        auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).catchError((u) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                              u.toString(),
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                            backgroundColor: pastelGreen,
+                            duration: const Duration(seconds: 5),
+                          ));
+                        });
+
                         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: ((context) => const HomePage())));
                       }),
                 )),
             const Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RichText(
-                text: TextSpan(
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: RichText(
+                  text: TextSpan(
                     text: "Don't have an account?",
                     style: const TextStyle(fontSize: 18, color: Colors.black),
-                    children: const [TextSpan(text: ' Sign up', style: TextStyle(color: lightGreen))],
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
-                      }),
+                    children: [
+                      TextSpan(
+                          text: ' Sign up',
+                          style: const TextStyle(color: lightGreen),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
+                            })
+                    ],
+                  ),
+                ),
               ),
             )
           ],

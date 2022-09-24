@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'add_new_run_page.dart';
@@ -14,15 +15,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children: const [
-          Text("Hi")
+        children: [
+          Text("Hi"),
+          TextButton(
+            child: Text("adasd"),
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+            },
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddNewRunPage()));
         },
       ),
     );
   }
-} 
+}

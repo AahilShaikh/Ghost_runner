@@ -47,6 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
         decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('assets/images/background_waves.png'), fit: BoxFit.fill)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
                 flex: 2,
@@ -54,9 +55,12 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Text("Create Account", textAlign: TextAlign.left, style: Theme.of(context).textTheme.headline1),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Text("Create Account", style: Theme.of(context).textTheme.headline1),
+                      ),
                     )
                   ],
                 )),
@@ -145,23 +149,31 @@ class _SignUpPageState extends State<SignUpPage> {
                           ));
                           return;
                         }
+                        
                         auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
                         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: ((context) => const HomePage())));
                       }),
                 )),
             const Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RichText(
-                text: TextSpan(
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: RichText(
+                  text: TextSpan(
                     text: 'Already have an account?',
                     style: const TextStyle(fontSize: 18, color: Colors.black),
-                    children: const [TextSpan(text: ' Sign in', style: TextStyle(color: lightGreen))],
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        print("asdas");
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
-                      }),
+                    children: [
+                      TextSpan(
+                          text: ' Sign in',
+                          style: const TextStyle(color: lightGreen),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
+                            })
+                    ],
+                  ),
+                ),
               ),
             )
           ],
