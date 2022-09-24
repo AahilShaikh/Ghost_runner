@@ -46,6 +46,7 @@ List<GeoPoint> latlngToGeoPoint(List<LatLng> points) {
   return result;
 }
 
+
 class bro_this_return_a_class_use_ahead_and_are_you_ahead {
   late double ahead;
   late bool are_you_ahead;
@@ -59,23 +60,18 @@ class ai_data {
 }
 
 class Ai {
-  ai_data main(List<double> logitude, List<double> Lantiide,
-      List<double> Oldlogitude, List<double> OldLantiide, double time) {
+  ai_data main(List<double> logitude, List<double> Lantiide, List<double> Oldlogitude, List<double> OldLantiide, double time) {
     ai_data return_data = ai_data();
 
     return_data.distance = distance(logitude, Lantiide);
 
     return_data.AvgSpeed = speed(return_data.distance, time);
 
-    return_data.extra_data =
-        areYouAhead(return_data.distance, Oldlogitude, OldLantiide);
+    return_data.extra_data = areYouAhead(return_data.distance, Oldlogitude, OldLantiide);
 
     return_data.speed = speed(
-        Distance()(
-            LatLng(
-                Lantiide[Lantiide.length - 2], logitude[logitude.length - 2]),
-            LatLng(
-                Lantiide[Lantiide.length - 1], logitude[logitude.length - 1])),
+        Distance()(LatLng(Lantiide[Lantiide.length - 2], logitude[logitude.length - 2]),
+            LatLng(Lantiide[Lantiide.length - 1], logitude[logitude.length - 1])),
         time / Lantiide.length);
 
     return return_data;
@@ -86,9 +82,7 @@ class Ai {
 
     for (int where = 0; where < logitude.length; where++) {
       try {
-        totalDistance = Distance()(LatLng(Lantiide[where], logitude[where]),
-                LatLng(Lantiide[where + 1], logitude[where + 1])) +
-            totalDistance;
+        totalDistance = Distance()(LatLng(Lantiide[where], logitude[where]), LatLng(Lantiide[where + 1], logitude[where + 1])) + totalDistance;
       } catch (_) {
         return totalDistance;
       }
@@ -102,12 +96,10 @@ class Ai {
     return first * 2.237 * 3600;
   }
 
-  bro_this_return_a_class_use_ahead_and_are_you_ahead areYouAhead(
-      double newDistance, List<double> Oldlogitude, List<double> OldLantiide) {
-    bro_this_return_a_class_use_ahead_and_are_you_ahead return_data =
-        bro_this_return_a_class_use_ahead_and_are_you_ahead();
+  bro_this_return_a_class_use_ahead_and_are_you_ahead areYouAhead(double newDistance, List<double> Oldlogitude, List<double> OldLantiide) {
+    bro_this_return_a_class_use_ahead_and_are_you_ahead return_data = bro_this_return_a_class_use_ahead_and_are_you_ahead();
 
-    double ghost = distance(Oldlogitude, OldLantiide);
+    double ghost = distance(OldLantiide, Oldlogitude);
 
     return_data.are_you_ahead = newDistance > ghost;
 

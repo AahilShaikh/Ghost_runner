@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:wwp_hacks_project/constants/palette.dart';
+import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
+import 'package:wwp_hacks_project/widgets/fab_button.dart';
 
 import 'add_new_run_page.dart';
 
@@ -21,24 +24,20 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            const Text("Hi"),
-            TextButton(
-              child: const Text("adasd"),
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-              },
-            )
-          ],
-        ),
+      body: Column(
+        children: [
+          const Text("Hi"),
+          TextButton(
+            child: const Text("Sign out"),
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
+            },
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddNewRunPage()));
-        },
-      ),
+      floatingActionButton: const FABBottomSheetButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
