@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "279080458713",
+    "project_id": "wwp-hacks-project",
+    "storage_bucket": "wwp-hacks-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279080458713:android:f7c300a215b1fdd401e1c8",
+        "android_client_info": {
+          "package_name": "com.example.wwp_hacks_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "279080458713-kchj5n8f9ts99r6kturpfm8asl5usd4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1oOJDg_kC_y-Lw8qGAWOhYaR-vQeUm0U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "279080458713-kchj5n8f9ts99r6kturpfm8asl5usd4g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
