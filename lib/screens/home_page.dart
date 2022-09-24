@@ -5,8 +5,6 @@ import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
 
-import 'add_new_run_page.dart';
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -24,17 +22,26 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: <Widget>[
+          IconButton(
+            color: Colors.black,
+            icon: const Icon(Icons.account_circle_sharp),
+            tooltip: 'Sign Out',
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const SignUpPage()));
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           children: [
-            const Text("Hi"),
-            TextButton(
-              child: const Text("Sign out"),
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
-              },
-            )
+
           ],
         ),
       ),
