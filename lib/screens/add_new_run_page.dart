@@ -52,16 +52,6 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
     _runNameController = TextEditingController();
     timer = Stopwatch();
     timer.start();
-    currentLocationSubscription = currentLocationStream.listen((Position? pos) {
-      if (mapController != null) {
-        mapController!.move(LatLng(pos!.latitude, pos.longitude), mapController!.zoom);
-      }
-      // if (path.isNotEmpty) {
-      //   setState(() {
-      //     distanceTraveled += distance.as(LengthUnit.Mile, path.keys.last, LatLng(pos!.latitude, pos.longitude));
-      //   });
-      // }
-    });
   }
 
   @override
@@ -135,6 +125,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                                               onPressed: () {
                                                 currentLocationSubscription.resume();
                                                 timer.stop();
+                                                Navigator.of(context).pop();
                                               },
                                             )
                                           ],

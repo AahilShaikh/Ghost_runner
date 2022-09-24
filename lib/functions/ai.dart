@@ -71,8 +71,3 @@ class Ai {
     return returnData;
   }
 }
-
-double calcDistanceAsFeet(LatLng a, LatLng b) {
-  Distance distance = Distance();
-  return distance.as(LengthUnit.Mile, a, b) * 5280;
-}
