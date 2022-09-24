@@ -1,9 +1,12 @@
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:wwp_hacks_project/constants/palette.dart';
 import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,6 +16,39 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final Stream<QuerySnapshot> data =
+      FirebaseFirestore.instance.collection('Updates').snapshots();
+  List<Map<String, dynamic>> firestoreData = {};
+  String? email = FirebaseAuth.instance.currentUser?.email;
+
+  void checkData() {
+    try {
+      if (email != null) {
+        FirebaseFirestore.instance
+            .collection("Users")
+            .doc(email.toString())
+            .collection("RunLocations")
+            .get()
+            .then((everything) {
+          for (var data in everything.docs) {
+            firestoreData.add({
+              "LocationData": data['LocationData'],
+              "elapsed_time_intervals": data['elapsed_time_intervals'],
+              "name": data['name'],
+            });
+          }
+          setState(() {});
+        });
+      } else {
+        throw 'Bad User Id, Please Sign Out';
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+      ));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -40,9 +76,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: Column(
-          children: [
-
-          ],
+          children: const [],
         ),
       ),
       floatingActionButton: const FABBottomSheetButton(),
