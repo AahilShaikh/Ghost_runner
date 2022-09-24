@@ -115,7 +115,6 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                                                   "elapsed_time_intervals": path.values.toList(),
                                                   'name': _runNameController.text
                                                 });
-                                                print("Original Path: $path");
                                                 Navigator.pop(context);
                                                 Navigator.pop(context);
                                               },
@@ -148,7 +147,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                 children: [
                   TileLayer(
                     urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c'],
+                    subdomains: const ['a', 'b', 'c'],
                     userAgentPackageName: 'com.example.ghost_trainer',
                   ),
                   StreamBuilder(

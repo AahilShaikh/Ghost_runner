@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wwp_hacks_project/screens/add_new_run_page.dart';
 import 'package:wwp_hacks_project/screens/race_page.dart';
@@ -11,7 +13,12 @@ class FABBottomSheetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> locations = DatabaseManager.getRunningLocations();
+    User? user = FirebaseAuth.instance.currentUser;
+    FirebaseAuth.instance.userChanges().listen((event) {
+      if (event != null) {
+        user = event;
+      }
+    });
     return FloatingActionButton(
       backgroundColor: lightGreen,
       onPressed: () {
@@ -29,15 +36,30 @@ class FABBottomSheetButton extends StatelessWidget {
                       const Padding(
                           padding: EdgeInsets.all(8), child: Text("Choose a location to run", style: TextStyle(fontSize: 20, color: darkBlack))),
                       Expanded(
-                        child: ListView.builder(
-                          shrinkWrap: false,
-                          itemCount: locations.length,
-                          itemBuilder: (context, i) {
-                            return ListTile(
-                              title: Text(locations[i]),
-                              onTap: () {
-                                
-                                DatabaseManager.getLocationData(locations[i]).then((value) => Navigator.of(context).push(MaterialPageRoute(builder: (context) => RacePage(value))));
+                        child: StreamBuilder(
+                          stream: FirebaseFirestore.instance.collection("Users").doc(user!.email).collection("RunLocations").snapshots(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                child: CircularProgressIndicator.adaptive(),
+                              );
+                            }
+                            List<String> locations = [];
+                            QuerySnapshot? query = snapshot.data as QuerySnapshot?;
+                            for (var element in query!.docs) {
+                              locations.add(element.id);
+                            }
+                            return ListView.builder(
+                              shrinkWrap: false,
+                              itemCount: locations.length,
+                              itemBuilder: (context, i) {
+                                return ListTile(
+                                  title: Text(locations[i]),
+                                  onTap: () {
+                                    DatabaseManager.getLocationData(locations[i])
+                                        .then((value) => Navigator.of(context).push(MaterialPageRoute(builder: (context) => RacePage(value))));
+                                  },
+                                );
                               },
                             );
                           },
