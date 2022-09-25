@@ -6,7 +6,10 @@ import 'package:latlong2/latlong.dart';
 
 import '../functions/ai.dart';
 
+
+
 class DatabaseManager {
+  static String nullDbError = "Please Sign in and out, there was a User error!";
   static void addNewRunLocation(
       String locationName, Map<String, dynamic> data, double speed) {
     User user = FirebaseAuth.instance.currentUser!;
@@ -41,11 +44,11 @@ class DatabaseManager {
     LinkedHashMap<LatLng, int> result = LinkedHashMap();
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw "null error";
+      throw nullDbError;
     }
     String? userEmail = user.email;
     if (userEmail == null) {
-      throw "null error";
+      throw nullDbError;
     }
     await FirebaseFirestore.instance
         .collection("Users")
@@ -68,11 +71,11 @@ class DatabaseManager {
   static void updateSpeed(double speed) {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw "null error";
+      throw nullDbError;
     }
     String? userEmail = user.email;
     if (userEmail == null) {
-      throw "null error";
+      throw nullDbError;
     }    SetOptions options = SetOptions(merge: true);
     List<double> speeds;
     FirebaseFirestore.instance
@@ -93,11 +96,12 @@ class DatabaseManager {
   static void getSpeeds(double speed) {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw "null error";
+      throw nullDbError;
     }
     String? userEmail = user.email;
     if (userEmail == null) {
-      throw "null error";
+      throw nullDbError;
+
     }
     List<double> speeds;
     FirebaseFirestore.instance
@@ -115,11 +119,13 @@ class DatabaseManager {
   static void sendAdvanceRuns(AIData backData) {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw "null error";
+      throw nullDbError;
+
     }
     String? userEmail = user.email;
     if (userEmail == null) {
-      throw "null error";
+      throw nullDbError;
+
     }
     SetOptions options = SetOptions(merge: true);
     List<double> speeds;
