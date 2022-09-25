@@ -157,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                             leftTitles: AxisTitles(
                               axisNameSize: 20,
                               axisNameWidget: const Padding(
-                                padding: EdgeInsets.only(bottom: 8.0),
+                                padding: EdgeInsets.only(bottom: 10.0),
                                 child: Text('Your Speed'),
                               ),
                               sideTitles: SideTitles(
@@ -169,15 +169,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                           gridData: FlGridData(
                             show: true,
-                            drawVerticalLine: false,
+                            drawVerticalLine: true,
                             horizontalInterval: 1,
-                            checkToShowHorizontalLine: (double value) {
-                              return value == 1 ||
-                                  value == 6 ||
-                                  value == 4 ||
-                                  value == 5 ||
-                                  value == 8;
-                            },
                           ),
                         ),
                       ),
