@@ -176,6 +176,7 @@ class _RacePanelState extends State<RacePanel> {
                                   ActionButton(
                                     child: const Text('End run'),
                                     onPressed: () {
+                                      DatabaseManager.updateSpeed(((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6));
                                       DatabaseManager.addHistoryData({
                                         "location": widget.locationName,
                                         "speed": ((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6),

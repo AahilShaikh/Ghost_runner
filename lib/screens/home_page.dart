@@ -8,8 +8,6 @@ import 'package:wwp_hacks_project/widgets/fab_button.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:wwp_hacks_project/widgets/line_chart_speed.dart';
 
-import '../services/database_manager.dart';
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -24,6 +22,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     checkLocationPermissions(context);
   }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -40,12 +39,25 @@ class _HomePageState extends State<HomePage> {
           }
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
+              backgroundColor: lightGreen,
+              elevation: 2,
+              centerTitle: true,
+              title: const Text(
+                "Ghost Trainer",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+              ),
               actions: <Widget>[
                 IconButton(
                   color: Colors.black,
-                  icon: const Icon(Icons.account_circle_sharp),
+                  icon: const Icon(
+                    Icons.account_circle_rounded,
+                    color: Colors.white,
+                  ),
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
@@ -72,10 +84,60 @@ class _HomePageState extends State<HomePage> {
                     speedData.add(FlSpot(i, element.toDouble()));
                     i++;
                   }
+                  double averageSpeed = 0;
+                  int x = 0;
+                  while (x < speeds.length || x == 6) {
+                    averageSpeed += speeds[x];
+                    x++;
+                  }
+                  averageSpeed /= i;
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration:
+                                BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white, boxShadow: [BoxShadow(offset: const Offset(0, 1), blurRadius: 5, spreadRadius: 5, color: Colors.grey[300]!)]),
+                            child: Row(
+                              children: [
+                                const Spacer(),
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "Welcome Back",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 2,
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      children: [
+                                        const Text(
+                                          "Average Speed/\nLast 7 runs: ",
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Text("${averageSpeed.toStringAsFixed(3)} mph")
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20,),
                         Expanded(child: SpeedLineChart(speedData)),
                         Expanded(
                             flex: 1,
@@ -83,15 +145,20 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 const Spacer(),
                                 const Text(
-                                  "Last Run Data",
-                                  style: TextStyle(fontSize: 16),
+                                  "Run History",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 2,
+                                  ),
                                 ),
                                 const Spacer(),
                                 Text("Your Last run  Distance is:  ${display["avgSpeed"].toString()}"),
                                 const Spacer(),
                                 Text("Your Last run Distance is:  ${display["distance"].toString()}"),
                                 const Spacer(),
-                                 Text("Did you beat the ai? ${display["Your are ahead"].toString()}"),
+                                Text("Did you beat the ai? ${display["Your are ahead"].toString()}"),
                               ],
                             ))
                       ],
