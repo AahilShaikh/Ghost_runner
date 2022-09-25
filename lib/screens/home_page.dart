@@ -76,10 +76,18 @@ class _HomePageState extends State<HomePage> {
                   List<FlSpot> speedData = [];
                   double i = 0;
                   for (double element in speeds) {
-                    speedData.add(FlSpot(i, element.toDouble()));
+                    speedData.add(FlSpot(i, element));
                     i++;
                   }
-                  return LineChartSample1(speedData);
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        LineChartSample1(speedData),
+                        //Todo add display widget here
+                      ],
+                    ),
+                  );
                 }),
             floatingActionButton: const FABBottomSheetButton(),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
