@@ -116,10 +116,12 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                                   ActionButton(
                                     child: const Text('Finish Run'),
                                     onPressed: () {
+                                      final Path smoothedPath = Path.from(widget.track.keys.toList());
+
                                       DatabaseManager.addNewRunLocation(
                                           _runNameController.text,
                                           {
-                                            "Location Data": latlngToGeoPoint(widget.track.keys.toList()),
+                                            "Location Data": latlngToGeoPoint(smoothedPath.equalize(5, smoothPath: true).coordinates),
                                             "elapsed_time_intervals": widget.track.values.toList(),
                                             'name': _runNameController.text,
                                           },
