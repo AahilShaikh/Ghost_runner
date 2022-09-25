@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:wwp_hacks_project/constants/palette.dart';
@@ -12,13 +13,14 @@ import 'package:wwp_hacks_project/functions/ai.dart';
 
 import '../services/location.dart';
 import '../widgets/action_button.dart';
+import '../widgets/alternate_action_button.dart';
 
 class RacePage extends StatefulWidget {
   final LinkedHashMap<LatLng, int> ghostData;
-  late final List<LatLng> path;
+  late final List<LatLng> track;
 
   RacePage(this.ghostData, {Key? key}) : super(key: key) {
-    path = ghostData.keys.toList();
+    track = ghostData.keys.toList();
   }
 
   @override
@@ -45,6 +47,7 @@ class _RacePageState extends State<RacePage> {
 
   double distanceTraveled = 0;
   int currentIndexOnPath = 0;
+  int error = 25;
 
   ///Release the ghost's position at every millisecond
   Stream<LatLng> ghostStream() async* {
@@ -89,17 +92,31 @@ class _RacePageState extends State<RacePage> {
                 children: [
                   Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(32, 16, 0, 0),
-                        child: Text("Meters traveled: $distanceTraveled"),
+                      Column(
+                        children: [
+                          const Text(
+                            "Your Progress",
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(32, 16, 0, 0),
+                            child: LinearPercentIndicator(
+                              width: 140.0,
+                              lineHeight: 14.0,
+                              percent: currentIndexOnPath / (widget.ghostData.length - 1),
+                              backgroundColor: Colors.grey,
+                              progressColor: lightGreen,
+                            ),
+                          ),
+                        ],
                       ),
                       const Spacer(),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 16, 32, 0),
-                        child: ActionButton(
+                        child: AlternateActionButton(
                             child: Row(
                               children: const [
-                                Text("Done"),
+                                Text("Cancel"),
                                 Icon(
                                   Icons.navigate_next_sharp,
                                   color: Colors.white,
@@ -136,6 +153,7 @@ class _RacePageState extends State<RacePage> {
                                               onPressed: () {
                                                 currentLocationSubscription.resume();
                                                 timer.start();
+                                                Navigator.of(context).pop();
                                               },
                                             )
                                           ],
@@ -146,6 +164,14 @@ class _RacePageState extends State<RacePage> {
                             }),
                       )
                     ],
+                  ),
+                  Text('Admin Panel'),
+                  Expanded(
+                    child: TextField(
+                      onChanged: (String s) {
+                        error = int.parse(s);
+                      },
+                    ),
                   )
                 ],
               ),
@@ -164,20 +190,15 @@ class _RacePageState extends State<RacePage> {
                   StreamBuilder(
                       stream: currentLocationStream,
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          //something
-                        }
                         if (snapshot.data != null) {
                           Position data = snapshot.data as Position;
-                          if (calcDistanceAsFeet(LatLng(data.latitude, data.longitude), widget.path[currentIndexOnPath]) < 5) {
-                            path[LatLng(data.latitude, data.longitude)] = timer.elapsedMilliseconds;
-                            currentIndexOnPath++;
-                          }
+                          LatLng point = LatLng(data.latitude, data.longitude);
+                          path[point] = timer.elapsedMilliseconds;
                         }
                         return PolylineLayer(
                           polylineCulling: true,
                           polylines: [
-                            Polyline(strokeWidth: 4.0, points: widget.path, color: Colors.grey[800]!),
+                            Polyline(strokeWidth: 4.0, points: widget.track, color: Colors.grey[600]!),
                             Polyline(
                               strokeWidth: 4.0,
                               points: path.keys.toList(),
@@ -190,6 +211,20 @@ class _RacePageState extends State<RacePage> {
                     stream: ghostStream(),
                     builder: ((context, snapshot) {
                       LatLng ghostLocation = (snapshot.data ?? LatLng(0, 0)) as LatLng;
+                      if (calcDistanceAsFeet(ghostLocation, widget.track.last) < 20) {
+                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return const Dialog(
+                                  child: SizedBox(
+                                    height: 100,
+                                    width: 100,
+                                    child: Center(child: Text("You Lose!!", style: TextStyle(fontSize: 20)))),
+                                );
+                              });
+                        });
+                      }
                       return MarkerLayer(
                         markers: [
                           Marker(
@@ -208,10 +243,33 @@ class _RacePageState extends State<RacePage> {
                     stream: currentLocationStream,
                     builder: (context, snapshot) {
                       Position? currentLocation = snapshot.data as Position?;
+                      LatLng point = LatLng(0, 0);
+                      if (currentLocation != null) {
+                        point = LatLng(currentLocation.latitude, currentLocation.longitude);
+                      }
+                      if (calcDistanceAsFeet(point, widget.track.last) < 20) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return const Dialog(
+                                  child: SizedBox(
+                                      height: 100,
+                                      width: 100,
+                                      child: Center(
+                                        child: Text(
+                                          "You Win!!",
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      )),
+                                );
+                              });
+                        });
+                      }
                       return MarkerLayer(
                         markers: [
                           Marker(
-                            point: currentLocation == null ? LatLng(0, 0) : LatLng(currentLocation.latitude, currentLocation.longitude),
+                            point: point,
                             width: 20,
                             height: 20,
                             builder: (context) => Container(

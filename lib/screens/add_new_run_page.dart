@@ -52,16 +52,6 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
     _runNameController = TextEditingController();
     timer = Stopwatch();
     timer.start();
-    currentLocationSubscription = currentLocationStream.listen((Position? pos) {
-      if (mapController != null) {
-        mapController!.move(LatLng(pos!.latitude, pos.longitude), mapController!.zoom);
-      }
-      // if (path.isNotEmpty) {
-      //   setState(() {
-      //     distanceTraveled += distance.as(LengthUnit.Mile, path.keys.last, LatLng(pos!.latitude, pos.longitude));
-      //   });
-      // }
-    });
   }
 
   @override
@@ -125,7 +115,6 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                                                   "elapsed_time_intervals": path.values.toList(),
                                                   'name': _runNameController.text
                                                 });
-                                                print("Original Path: $path");
                                                 Navigator.pop(context);
                                                 Navigator.pop(context);
                                               },
@@ -135,6 +124,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                                               onPressed: () {
                                                 currentLocationSubscription.resume();
                                                 timer.stop();
+                                                Navigator.of(context).pop();
                                               },
                                             )
                                           ],
@@ -157,7 +147,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                 children: [
                   TileLayer(
                     urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c'],
+                    subdomains: const ['a', 'b', 'c'],
                     userAgentPackageName: 'com.example.ghost_trainer',
                   ),
                   StreamBuilder(
