@@ -36,9 +36,10 @@ class _HomePageState extends State<HomePage> {
               firestoreData.add(everything["speed"][x].toDouble());
             } catch (_) {}
           }
+
           for (int x = 0; x < firestoreData.length; x++) {
             isNull = false;
-            display.add(FlSpot(x.toDouble(), firestoreData[x]));
+            display = display + [FlSpot(x.toDouble(), firestoreData[x])];
           }
           setState(() {});
         });
