@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:wwp_hacks_project/widgets/add_new_run_panel.dart';
 
 import '../services/database_manager.dart';
 import '../services/location.dart';
@@ -29,13 +30,9 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
 
   //location variables
   late final Stream<Position> currentLocationStream;
-  late final StreamSubscription<Position> currentLocationSubscription;
   final LinkedHashMap<LatLng, int> path = LinkedHashMap();
 
-  //Run name
-  late final TextEditingController _runNameController;
-
-  late final Stopwatch timer;
+  late final Stopwatch stopwatch;
 
   double distanceTraveled = 0;
 
@@ -49,9 +46,14 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
     currentLocationStream = Geolocator.getPositionStream(locationSettings: locationSettings).asBroadcastStream();
     //whenever the stream updates do the following:
 
-    _runNameController = TextEditingController();
-    timer = Stopwatch();
-    timer.start();
+    stopwatch = Stopwatch();
+    stopwatch.start();
+  }
+
+  @override
+  void dispose() {
+    stopwatch.stop();
+    super.dispose();
   }
 
   @override
@@ -66,78 +68,9 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
           }
           Position initialPos = snapshot.data as Position;
           return SlidingUpPanel(
+              maxHeight: 200,
               borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-              panel: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(32, 16, 0, 0),
-                        child: Text("Meters traveled: $distanceTraveled"),
-                      ),
-                      const Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 16, 32, 0),
-                        child: ActionButton(
-                            child: Row(
-                              children: const [
-                                Text("Done"),
-                                Icon(
-                                  Icons.navigate_next_sharp,
-                                  color: Colors.white,
-                                )
-                              ],
-                            ),
-                            onPressed: () {
-                              currentLocationSubscription.pause();
-                              timer.stop();
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return Dialog(
-                                      child: SizedBox(
-                                        height: MediaQuery.of(context).size.height / 3,
-                                        width: MediaQuery.of(context).size.width / 2,
-                                        child: Column(
-                                          children: [
-                                            const Text("Enter Run Name"),
-                                            Expanded(
-                                              child: TextField(
-                                                controller: _runNameController,
-                                              ),
-                                            ),
-                                            ActionButton(
-                                              child: const Text('Finish Run'),
-                                              onPressed: () {
-                                                DatabaseManager.addNewRunLocation(_runNameController.text, {
-                                                  "Location Data": latlngToGeoPoint(path.keys.toList()),
-                                                  "elapsed_time_intervals": path.values.toList(),
-                                                  'name': _runNameController.text
-                                                });
-                                                Navigator.pop(context);
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                            TextButton(
-                                              child: const Text('Cancel'),
-                                              onPressed: () {
-                                                currentLocationSubscription.resume();
-                                                timer.stop();
-                                                Navigator.of(context).pop();
-                                              },
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            }),
-                      )
-                    ],
-                  )
-                ],
-              ),
+              panel: AddNewRunPanel(path, stopwatch, currentLocationStream),
               body: FlutterMap(
                 options: MapOptions(
                   center: LatLng(initialPos.latitude, initialPos.longitude),
@@ -153,12 +86,9 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                   StreamBuilder(
                       stream: currentLocationStream,
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          //something
-                        }
                         if (snapshot.data != null) {
                           Position data = snapshot.data as Position;
-                          path[LatLng(data.latitude, data.longitude)] = timer.elapsedMilliseconds;
+                          path[LatLng(data.latitude, data.longitude)] = stopwatch.elapsedMilliseconds;
                         }
                         return PolylineLayer(
                           polylineCulling: true,
