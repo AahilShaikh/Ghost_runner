@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const double cutOffYValue = 5.0;
+  static const double cutOffYValue = 500;
 
   final Stream<QuerySnapshot> data =
       FirebaseFirestore.instance.collection('Updates').snapshots();
