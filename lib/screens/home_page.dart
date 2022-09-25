@@ -155,21 +155,6 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.all(8),
                               itemCount: history.length,
                               itemBuilder: (BuildContext context, int index) {
-<<<<<<< HEAD
-                                return Column(
-                                  children: [
-                                    const Spacer(),
-                                    const Text(
-                                      "Last Run Data",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                    const Spacer(),
-                                    Text("Your Last run  Distance is:  ${history[index]["distance"].toString()}"),
-                                    const Spacer(),
-                                    Text("Your Last run speed is:  ${history[index]["Speed"].toString()}"),
-                                    const Spacer(),
-                                  ],
-=======
                                 return SizedBox(
                                   height: 150,
                                   child: Column(
@@ -188,7 +173,6 @@ class _HomePageState extends State<HomePage> {
                                       const Spacer(),
                                     ],
                                   ),
->>>>>>> ce99aa60ffb4ef72376955140551c03ba6afdf01
                                 );
                               },
                             ))
