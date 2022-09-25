@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:wwp_hacks_project/constants/palette.dart';
 import 'package:wwp_hacks_project/widgets/add_new_run_panel.dart';
 
 import '../services/database_manager.dart';
@@ -96,7 +97,7 @@ class _AddNewRunPageState extends State<AddNewRunPage> {
                             Polyline(
                               strokeWidth: 4.0,
                               points: path.keys.toList(),
-                              gradientColors: [Colors.black, Colors.blue],
+                              gradientColors: [Colors.black, lightGreen],
                             ),
                           ],
                         );
