@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                 ));
           } else if (firestoreData![0]['LocationData'] == null) {
             //Todo add null handling
-            throw "Implement null handling your lazy fuck";
+            throw "Implement null handling your lazy fucking indian bitch. Go suck a cock and bomb a building as you should";
           }
           return Scaffold(
             appBar: AppBar(
