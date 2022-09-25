@@ -31,7 +31,8 @@ class _HomePageState extends State<HomePage> {
                 color: Theme.of(context).backgroundColor,
                 child: Center(
                   child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).textTheme.headline1!.color as Color),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
           }
@@ -46,13 +47,17 @@ class _HomePageState extends State<HomePage> {
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const SignUpPage()));
                   },
                 ),
               ],
             ),
             body: StreamBuilder(
-                stream: FirebaseFirestore.instance.collection("Users").doc(FirebaseAuth.instance.currentUser!.email).snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection("Users")
+                    .doc(FirebaseAuth.instance.currentUser!.email)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(
@@ -60,12 +65,18 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
                   DocumentSnapshot doc = snapshot.data as DocumentSnapshot;
-                  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-                  List<dynamic> speeds = data['speeds'] ?? [];
+                  Map<String, dynamic> data =
+                      doc.data() as Map<String, dynamic>;
+                  List<double> speeds = [];
+                  for (int x = 0; x > data['speeds'].length; x++) {
+                    try {
+                      speeds.add(double.parse(['speeds'][x]));
+                    } catch (_) {}
+                  }
                   List<FlSpot> speedData = [];
                   double i = 0;
-                  for (var element in speeds) {
-                    speedData.add(FlSpot(i, element));
+                  for (double element in speeds) {
+                    speedData.add(FlSpot(i, element.toDouble()));
                     i++;
                   }
                   return LineChartSample1(speedData);
@@ -86,7 +97,6 @@ class LineChartSample1 extends StatefulWidget {
 }
 
 class LineChartSample1State extends State<LineChartSample1> {
-
   @override
   void initState() {
     super.initState();
