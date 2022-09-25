@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:wwp_hacks_project/constants/palette.dart';
 import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:wwp_hacks_project/widgets/line_chart_speed.dart';
 
-import '../services/database_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -69,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                   List<FlSpot> speedData = [];
                   double i = 0;
                   for (dynamic element in speeds) {
-                    speedData.add(FlSpot(i, element.toDouble()));
+                    speedData.add(FlSpot(i, double.parse(element)));
                     i++;
                   }
                   return Padding(
