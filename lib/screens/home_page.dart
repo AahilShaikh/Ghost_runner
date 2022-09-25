@@ -150,14 +150,13 @@ class _HomePageState extends State<HomePage> {
                             ),
                             bottomTitles: AxisTitles(
                               axisNameWidget: const Text(
-                                '2019',
+                                'Speed Over Your Runs',
                                 style: _dateTextStyle,
                               ),
                               sideTitles: SideTitles(
                                 showTitles: true,
                                 reservedSize: 18,
                                 interval: 1,
-                                getTitlesWidget: bottomTitleWidgets,
                               ),
                             ),
                             leftTitles: AxisTitles(
@@ -199,61 +198,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-Widget bottomTitleWidgets(double value, TitleMeta meta) {
-  String text;
-  switch (value.toInt()) {
-    case 0:
-      text = 'Jan';
-      break;
-    case 1:
-      text = 'Feb';
-      break;
-    case 2:
-      text = 'Mar';
-      break;
-    case 3:
-      text = 'Apr';
-      break;
-    case 4:
-      text = 'May';
-      break;
-    case 5:
-      text = 'Jun';
-      break;
-    case 6:
-      text = 'Jul';
-      break;
-    case 7:
-      text = 'Aug';
-      break;
-    case 8:
-      text = 'Sep';
-      break;
-    case 9:
-      text = 'Oct';
-      break;
-    case 10:
-      text = 'Nov';
-      break;
-    case 11:
-      text = 'Dec';
-      break;
-    default:
-      return Container();
-  }
-
-  return SideTitleWidget(
-    axisSide: meta.axisSide,
-    space: 4,
-    child: Text(text, style: _dateTextStyle),
-  );
-}
-
-const _dateTextStyle = TextStyle(
-  fontSize: 10,
-  color: Colors.purple,
-  fontWeight: FontWeight.bold,
-);
 
 Widget leftTitleWidgets(double value, TitleMeta meta) {
   const style = TextStyle(color: Colors.black, fontSize: 12.0);
