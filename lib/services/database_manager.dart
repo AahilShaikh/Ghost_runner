@@ -32,6 +32,7 @@ class DatabaseManager {
         .collection("RunLocations")
         .get()
         .then((value) => {
+          // TODO change this for each is slow!!!!!!
               value.docs.forEach((element) {
                 locations.add(element.id);
               })
@@ -109,7 +110,6 @@ class DatabaseManager {
   static void sendAdvanceRuns(AIData backData) {
     String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
-    List<double> speeds;
     FirebaseFirestore.instance.collection("Users").doc(userEmail).set({
       "advance_data": {
         "distance": backData.distance,
