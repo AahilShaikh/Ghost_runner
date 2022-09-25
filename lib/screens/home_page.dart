@@ -133,6 +133,7 @@ class _HomePageState extends State<HomePage> {
                                       children: [
                                         const Text(
                                           "Average Speed/\nLast 7 runs: ",
+                                          style: TextStyle(fontSize: 8),
                                           textAlign: TextAlign.center,
                                         ),
                                         Text("${averageSpeed.toStringAsFixed(3)} mph")
@@ -154,6 +155,7 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.all(8),
                               itemCount: history.length,
                               itemBuilder: (BuildContext context, int index) {
+<<<<<<< HEAD
                                 return Column(
                                   children: [
                                     const Spacer(),
@@ -167,6 +169,26 @@ class _HomePageState extends State<HomePage> {
                                     Text("Your Last run speed is:  ${history[index]["Speed"].toString()}"),
                                     const Spacer(),
                                   ],
+=======
+                                return SizedBox(
+                                  height: 150,
+                                  child: Column(
+                                    children: [
+                                      const Spacer(),
+                                      const Text(
+                                        "Last Run Data",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                          "Your Last run  Distance is:  ${history[index]["distance"].toString()}"),
+                                      const Spacer(),
+                                      Text(
+                                          "Your Last run speed is:  ${history[index]["Speed"].toString()}"),
+                                      const Spacer(),
+                                    ],
+                                  ),
+>>>>>>> ce99aa60ffb4ef72376955140551c03ba6afdf01
                                 );
                               },
                             ))
