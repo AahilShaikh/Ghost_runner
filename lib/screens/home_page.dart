@@ -32,7 +32,9 @@ class _HomePageState extends State<HomePage> {
             .get()
             .then((everything) {
           for (int x = 0; x < everything["speed"].length; x++) {
-            firestoreData.add(everything["speed"][x].toDouble());
+            try {
+              firestoreData.add(everything["speed"][x].toDouble());
+            } catch (_) {}
           }
           for (int x = 0; x < firestoreData.length; x++) {
             isNull = false;
@@ -174,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                                   value == 6 ||
                                   value == 4 ||
                                   value == 5 ||
-                              value == 8;
+                                  value == 8;
                             },
                           ),
                         ),
