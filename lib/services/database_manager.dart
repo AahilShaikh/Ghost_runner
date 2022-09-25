@@ -9,48 +9,35 @@ import '../functions/ai.dart';
 class DatabaseManager {
   static String nullDbError = "Please Sign in and out, there was a User error!";
 
-  static void addNewRunLocation(
-      String locationName, Map<String, dynamic> data, double speed) {
+  static void addNewRunLocation(String locationName, Map<String, dynamic> data, double speed, double distanceTraveled) {
     String userEmail = nullCheckEmail();
 
     SetOptions options = SetOptions(merge: true);
-    FirebaseFirestore.instance
-        .collection("Users")
-        .doc(userEmail)
-        .collection("RunLocations")
-        .doc(locationName)
-        .set(data, options);
+    FirebaseFirestore.instance.collection("Users").doc(userEmail).collection("RunLocations").doc(locationName).set(data, options);
     updateSpeed(speed);
+    addHistoryData({
+      "location": locationName,
+      "speed": speed,
+      "distanceTraveled": distanceTraveled,
+    });
   }
 
   static List<String> getRunningLocations() {
     List<String> locations = [];
     String userEmail = nullCheckEmail();
-    FirebaseFirestore.instance
-        .collection("Users")
-        .doc(userEmail)
-        .collection("RunLocations")
-        .get()
-        .then((value) => {
-              // TODO change this for each is slow!!!!!!
-              value.docs.forEach((element) {
-                locations.add(element.id);
-              })
-            });
+    FirebaseFirestore.instance.collection("Users").doc(userEmail).collection("RunLocations").get().then((value) => {
+          // TODO change this for each is slow!!!!!!
+          value.docs.forEach((element) {
+            locations.add(element.id);
+          })
+        });
     return locations;
   }
 
-  static Future<LinkedHashMap<LatLng, int>> getLocationData(
-      String runName) async {
+  static Future<LinkedHashMap<LatLng, int>> getLocationData(String runName) async {
     LinkedHashMap<LatLng, int> result = LinkedHashMap();
     String userEmail = nullCheckEmail();
-    await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(userEmail)
-        .collection("RunLocations")
-        .doc(runName)
-        .get()
-        .then((value) {
+    await FirebaseFirestore.instance.collection("Users").doc(userEmail).collection("RunLocations").doc(runName).get().then((value) {
       Map<String, dynamic> data = value.data() as Map<String, dynamic>;
       List<dynamic> location = data['Location Data'];
       List<dynamic> time = data['elapsed_time_intervals'];
@@ -66,29 +53,18 @@ class DatabaseManager {
     String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
     List<double> speeds;
-    FirebaseFirestore.instance
-        .collection("Users")
-        .doc(userEmail)
-        .get()
-        .then((value) {
+    FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
       Map<String, dynamic> data = value.data() as Map<String, dynamic>;
       speeds = data['speeds'] ?? [];
       speeds.add(speed);
-      FirebaseFirestore.instance
-          .collection("Users")
-          .doc(userEmail)
-          .set({"speeds": speeds}, options);
+      FirebaseFirestore.instance.collection("Users").doc(userEmail).set({"speeds": speeds}, options);
     });
   }
 
   static void getSpeeds(double speed) {
     String userEmail = nullCheckEmail();
     List<double> speeds;
-    FirebaseFirestore.instance
-        .collection("Users")
-        .doc(userEmail)
-        .get()
-        .then((value) {
+    FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
       Map<String, dynamic> data = value.data() as Map<String, dynamic>;
       speeds = data['speeds'] ?? [];
       speeds.add(speed);
@@ -108,27 +84,23 @@ class DatabaseManager {
     return userEmail;
   }
 
-  static void sendAdvanceRuns() {
+  static void addHistoryData(Map<String, dynamic> data) {
     String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
-    FirebaseFirestore.instance.collection("Users").doc(userEmail).set({
-      "advance_data": {
-        "distance": "3",
-        "avgSpeed": "6",
-        "ahead_by_how_much": "24",
-        "ahead": "Your are ahead!",
-      }
-    }, options);
+    FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
+      Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+      List<dynamic> history = data['history'];
+      history.add(data);
+      FirebaseFirestore.instance.collection("Users").doc(userEmail).set({"history": history}, options);
+    });
   }
 
-  static Future<Map<String, String>> getAdvacnedRuns() async {
+  static Future<List<Map<String, dynamic>>> getAdvancedRuns() async {
     String userEmail = nullCheckEmail();
-    late Map<String, String> returnData;
-    await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(userEmail)
-        .get()
-        .then((value) => {returnData = value["advance_data"]});
+    List<Map<String, dynamic>> returnData = [];
+    await FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
+      returnData = value["history"];
+    });
     return returnData;
   }
 }

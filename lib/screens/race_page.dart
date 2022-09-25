@@ -16,8 +16,9 @@ import '../services/location.dart';
 class RacePage extends StatefulWidget {
   final LinkedHashMap<LatLng, int> ghostData;
   late final List<LatLng> track;
+  final String locationName;
 
-  RacePage(this.ghostData, {Key? key}) : super(key: key) {
+  RacePage(this.ghostData, this.locationName, {Key? key}) : super(key: key) {
     track = ghostData.keys.toList();
   }
 
@@ -82,9 +83,9 @@ class _RacePageState extends State<RacePage> {
           }
           Position initialPos = snapshot.data as Position;
           return SlidingUpPanel(
-            maxHeight: 200,
+              maxHeight: 200,
               borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-              panel: RacePanel(path, stopwatch, currentLocationStream),
+              panel: RacePanel(path, stopwatch, currentLocationStream, widget.locationName),
               body: FlutterMap(
                 options: MapOptions(
                   center: LatLng(initialPos.latitude, initialPos.longitude),
@@ -127,10 +128,7 @@ class _RacePageState extends State<RacePage> {
                               context: context,
                               builder: (context) {
                                 return const Dialog(
-                                  child: SizedBox(
-                                    height: 100,
-                                    width: 100,
-                                    child: Center(child: Text("You Lose!!", style: TextStyle(fontSize: 20)))),
+                                  child: SizedBox(height: 100, width: 100, child: Center(child: Text("You Lose!!", style: TextStyle(fontSize: 20)))),
                                 );
                               });
                         });
@@ -157,7 +155,6 @@ class _RacePageState extends State<RacePage> {
                       if (currentLocation != null) {
                         point = LatLng(currentLocation.latitude, currentLocation.longitude);
                       }
-                      DatabaseManager.sendAdvanceRuns();
                       if (calcDistanceAsFeet(point, widget.track.last) < 20) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           showDialog(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:wwp_hacks_project/services/database_manager.dart';
 
 import '../constants/palette.dart';
 import '../services/location.dart';
@@ -15,15 +16,15 @@ class RacePanel extends StatefulWidget {
   final LinkedHashMap<LatLng, int> track;
   final Stopwatch stopwatch;
   final Stream<Position> dataStream;
+  final String locationName;
 
-  const RacePanel(this.track, this.stopwatch, this.dataStream, {Key? key}) : super(key: key);
+  const RacePanel(this.track, this.stopwatch, this.dataStream, this.locationName, {Key? key}) : super(key: key);
 
   @override
   State<RacePanel> createState() => _RacePanelState();
 }
 
 class _RacePanelState extends State<RacePanel> {
-
   double distanceTraveled = 0;
   Position? prevPos;
   late final StreamSubscription sub;
@@ -58,7 +59,6 @@ class _RacePanelState extends State<RacePanel> {
         Row(
           children: [
             const Spacer(),
-            
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
               child: Container(
@@ -176,6 +176,11 @@ class _RacePanelState extends State<RacePanel> {
                                   ActionButton(
                                     child: const Text('End run'),
                                     onPressed: () {
+                                      DatabaseManager.addHistoryData({
+                                        "location": widget.locationName,
+                                        "speed": ((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6),
+                                        "distanceTraveled": distanceTraveled,
+                                      });
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     },

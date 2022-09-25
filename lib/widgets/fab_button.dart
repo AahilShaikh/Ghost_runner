@@ -57,7 +57,7 @@ class FABBottomSheetButton extends StatelessWidget {
                                   title: Text(locations[i]),
                                   onTap: () {
                                     DatabaseManager.getLocationData(locations[i])
-                                        .then((value) => Navigator.of(context).push(MaterialPageRoute(builder: (context) => RacePage(value))));
+                                        .then((value) => Navigator.of(context).push(MaterialPageRoute(builder: (context) => RacePage(value, locations[i]))));
                                   },
                                 );
                               },

@@ -6,6 +6,7 @@ import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:wwp_hacks_project/widgets/line_chart_speed.dart';
 
 import '../services/database_manager.dart';
 
@@ -17,13 +18,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Map<String, String> diplay = {};
+  Map<String, String> display = {};
 
   @override
   void initState() {
     super.initState();
     checkLocationPermissions(context);
-    DatabaseManager.getAdvacnedRuns();
+    DatabaseManager.getAdvancedRuns();
   }
 
   @override
@@ -36,8 +37,7 @@ class _HomePageState extends State<HomePage> {
                 color: Theme.of(context).backgroundColor,
                 child: Center(
                   child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).textTheme.headline1!.color as Color),
+                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
           }
@@ -52,17 +52,13 @@ class _HomePageState extends State<HomePage> {
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
                   },
                 ),
               ],
             ),
             body: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("Users")
-                    .doc(FirebaseAuth.instance.currentUser!.email)
-                    .snapshots(),
+                stream: FirebaseFirestore.instance.collection("Users").doc(FirebaseAuth.instance.currentUser!.email).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(
@@ -70,25 +66,20 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
                   DocumentSnapshot doc = snapshot.data as DocumentSnapshot;
-                  Map<String, dynamic> data =
-                      doc.data() as Map<String, dynamic>;
-                  List<double> speeds = [];
-                  for (int x = 0; x > data['speeds'].length; x++) {
-                    try {
-                      speeds.add(double.parse(['speeds'][x]));
-                    } catch (_) {}
-                  }
+                  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+                  List<dynamic> speeds = [];
+                  speeds = data['speeds'];
                   List<FlSpot> speedData = [];
                   double i = 0;
-                  for (double element in speeds) {
-                    speedData.add(FlSpot(i, element));
+                  for (dynamic element in speeds) {
+                    speedData.add(FlSpot(i, element.toDouble()));
                     i++;
                   }
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        Expanded(child: LineChartSample1(speedData)),
+                        Expanded(child: SpeedLineChart(speedData)),
                         Expanded(
                             flex: 1,
                             child: Column(
@@ -99,14 +90,11 @@ class _HomePageState extends State<HomePage> {
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 const Spacer(),
-                                Text(
-                                    "Your Last run  Distance is:  ${diplay["avgSpeed"].toString()}"),
+                                Text("Your Last run  Distance is:  ${display["avgSpeed"].toString()}"),
                                 const Spacer(),
-                                Text(
-                                    "Your Last run Distance is:  ${diplay["distance"].toString()}"),
+                                Text("Your Last run Distance is:  ${display["distance"].toString()}"),
                                 const Spacer(),
-                                Text(
-                                    "Did you beat the ai? ${diplay["Your are ahead"].toString()}"),
+                                Text("Did you beat the ai? ${display["Your are ahead"].toString()}"),
                                 const Spacer(),
                               ],
                             ))
@@ -119,175 +107,4 @@ class _HomePageState extends State<HomePage> {
           );
         });
   }
-}
-
-class LineChartSample1 extends StatefulWidget {
-  const LineChartSample1(this.data, {Key? key}) : super(key: key);
-  final List<FlSpot> data;
-
-  @override
-  State<StatefulWidget> createState() => LineChartSample1State();
-}
-
-class LineChartSample1State extends State<LineChartSample1> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.23,
-      child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(18)),
-          gradient: LinearGradient(
-            colors: [
-              Color(0xff2c274c),
-              Color(0xff46426c),
-            ],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-          ),
-        ),
-        child: Stack(
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                const SizedBox(
-                  height: 37,
-                ),
-                const Text(
-                  'Running Data',
-                  style: TextStyle(
-                    color: Color(0xff827daa),
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 4,
-                ),
-                const Text(
-                  'Average Speed',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 37,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, left: 6.0),
-                    child: LineChart(
-                      LineChartData(
-                        lineTouchData: LineTouchData(
-                          handleBuiltInTouches: true,
-                          touchTooltipData: LineTouchTooltipData(
-                            tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
-                          ),
-                        ),
-                        gridData: gridData,
-                        titlesData: FlTitlesData(
-                          bottomTitles: AxisTitles(
-                            sideTitles: bottomTitles,
-                          ),
-                          rightTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          topTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          leftTitles: AxisTitles(
-                            sideTitles: leftTitles(),
-                          ),
-                        ),
-                        borderData: borderData,
-                        lineBarsData: [
-                          lineChartBarData1_1,
-                        ],
-                        minX: 0,
-                        maxX: 14,
-                        maxY: 4,
-                        minY: 0,
-                      ),
-                      swapAnimationDuration: const Duration(milliseconds: 250),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color(0xff75729e),
-      fontWeight: FontWeight.bold,
-      fontSize: 14,
-    );
-    return Text(value.toString(), style: style, textAlign: TextAlign.center);
-  }
-
-  SideTitles leftTitles() => SideTitles(
-        getTitlesWidget: leftTitleWidgets,
-        showTitles: true,
-        interval: 1,
-        reservedSize: 40,
-      );
-
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color(0xff72719b),
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 10,
-      child: Text(value.toInt().toString(), style: style),
-    );
-  }
-
-  SideTitles get bottomTitles => SideTitles(
-        showTitles: true,
-        reservedSize: 32,
-        interval: 3,
-        getTitlesWidget: bottomTitleWidgets,
-      );
-
-  FlGridData get gridData => FlGridData(show: false);
-
-  FlBorderData get borderData => FlBorderData(
-        show: true,
-        border: const Border(
-          bottom: BorderSide(color: Color(0xff4e4965), width: 4),
-          left: BorderSide(color: Colors.transparent),
-          right: BorderSide(color: Colors.transparent),
-          top: BorderSide(color: Colors.transparent),
-        ),
-      );
-
-  LineChartBarData get lineChartBarData1_1 => LineChartBarData(
-        isCurved: true,
-        color: lightGreen,
-        barWidth: 8,
-        isStrokeCapRound: true,
-        dotData: FlDotData(show: true),
-        belowBarData: BarAreaData(show: false),
-        spots: widget.data,
-      );
 }

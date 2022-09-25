@@ -116,11 +116,15 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                                   ActionButton(
                                     child: const Text('Finish Run'),
                                     onPressed: () {
-                                      DatabaseManager.addNewRunLocation(_runNameController.text, {
-                                        "Location Data": latlngToGeoPoint(widget.track.keys.toList()),
-                                        "elapsed_time_intervals": widget.track.values.toList(),
-                                        'name': _runNameController.text,
-                                      }, ((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6));
+                                      DatabaseManager.addNewRunLocation(
+                                          _runNameController.text,
+                                          {
+                                            "Location Data": latlngToGeoPoint(widget.track.keys.toList()),
+                                            "elapsed_time_intervals": widget.track.values.toList(),
+                                            'name': _runNameController.text,
+                                          },
+                                          ((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6), distanceTraveled);
+                                      
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     },
@@ -141,7 +145,9 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
             )
           ],
         ),
-        const SizedBox(height: 20,),
+        const SizedBox(
+          height: 20,
+        ),
         Container(
           decoration: BoxDecoration(
             boxShadow: [
