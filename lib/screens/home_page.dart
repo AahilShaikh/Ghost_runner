@@ -1,13 +1,9 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:wwp_hacks_project/screens/login_page.dart';
 import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,23 +13,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Stream<QuerySnapshot> data =
-      FirebaseFirestore.instance.collection('Updates').snapshots();
+  final Stream<QuerySnapshot> data = FirebaseFirestore.instance.collection('Updates').snapshots();
   List<Map<String, dynamic>>? firestoreData;
   String? email = FirebaseAuth.instance.currentUser?.email;
+  bool isNull = true;
 
   void checkData() {
     try {
       if (email != null) {
-        FirebaseFirestore.instance
-            .collection("Users")
-            .doc(email.toString())
-            .collection("RunLocations")
-            .get()
-            .then((everything) {
+        FirebaseFirestore.instance.collection("Users").doc(email.toString()).collection("RunLocations").get().then((everything) {
           for (var data in everything.docs) {
+            isNull = false;
             firestoreData?.add({
-              "LocationData": data['LocationData'],
+              "LocationData": data['Location Data'],
               "elapsed_time_intervals": data['elapsed_time_intervals'],
               "name": data['name'],
             });
@@ -66,15 +58,15 @@ class _HomePageState extends State<HomePage> {
                 color: Theme.of(context).backgroundColor,
                 child: Center(
                   child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).textTheme.headline1!.color as Color),
+                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
-          } 
-          // else if (firestoreData![0]['LocationData'] == null) {
-          //   //Todo add null handling
-            
-          // }
+          } else {
+            //Todo add null handling
+            if (!isNull) {
+              throw "hmmmm. there is a problem";
+            }
+          }
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.transparent,
@@ -86,8 +78,7 @@ class _HomePageState extends State<HomePage> {
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
                   },
                 ),
               ],
