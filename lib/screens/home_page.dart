@@ -8,8 +8,7 @@ import 'package:wwp_hacks_project/widgets/fab_button.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class HomePage extends StatefulWidget {
-  final bool isShowingMainData;
-  const HomePage({this.isShowingMainData = true, Key? key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -21,12 +20,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     checkLocationPermissions(context);
   }
-
-  static const _dateTextStyle = TextStyle(
-    fontSize: 10,
-    color: Colors.purple,
-    fontWeight: FontWeight.bold,
-  );
 
   @override
   Widget build(BuildContext context) {
