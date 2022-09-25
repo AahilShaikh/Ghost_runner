@@ -31,6 +31,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_auth: ^3.10.0
   firebase_core: ^1.23.0
+  fl_chart: ^0.55.2
   flutter:
     sdk: flutter
   flutter_map: ^3.0.0

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,9 +14,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static const double cutOffYValue = 500;
+
   final Stream<QuerySnapshot> data =
       FirebaseFirestore.instance.collection('Updates').snapshots();
-  List<int>? firestoreData;
+  List<double> firestoreData = [];
+  List<FlSpot> display = [];
   String? email = FirebaseAuth.instance.currentUser?.email;
   bool isNull = true;
 
@@ -28,8 +32,13 @@ class _HomePageState extends State<HomePage> {
             .get()
             .then((everything) {
           for (int x = 0; x < everything["speed"].length; x++) {
+            try {
+              firestoreData.add(everything["speed"][x].toDouble());
+            } catch (_) {}
+          }
+          for (int x = 0; x < firestoreData.length; x++) {
             isNull = false;
-            firestoreData?.add(everything["speed"][x]);
+            display.add(FlSpot(x.toDouble(), firestoreData[x]));
           }
           setState(() {});
         });
@@ -49,6 +58,12 @@ class _HomePageState extends State<HomePage> {
     checkLocationPermissions(context);
   }
 
+  static const _dateTextStyle = TextStyle(
+    fontSize: 10,
+    color: Colors.purple,
+    fontWeight: FontWeight.bold,
+  );
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -59,7 +74,8 @@ class _HomePageState extends State<HomePage> {
                 color: Theme.of(context).backgroundColor,
                 child: Center(
                   child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).textTheme.headline1!.color as Color),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
           } else {
@@ -79,14 +95,88 @@ class _HomePageState extends State<HomePage> {
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const SignUpPage()));
                   },
                 ),
               ],
             ),
             body: Center(
               child: Column(
-                children: const [Text("fard")],
+                children: [
+                  AspectRatio(
+                    aspectRatio: 2.4,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12, right: 24),
+                      child: LineChart(
+                        LineChartData(
+                          lineTouchData: LineTouchData(enabled: false),
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: display,
+                              isCurved: false,
+                              barWidth: 8,
+                              color: Colors.purpleAccent,
+                              belowBarData: BarAreaData(
+                                show: true,
+                                color: Colors.deepPurple.withOpacity(0.4),
+                                cutOffY: cutOffYValue,
+                                applyCutOffY: true,
+                              ),
+                              aboveBarData: BarAreaData(
+                                show: true,
+                                color: Colors.orange.withOpacity(0.6),
+                                cutOffY: cutOffYValue,
+                                applyCutOffY: true,
+                              ),
+                              dotData: FlDotData(
+                                show: false,
+                              ),
+                            ),
+                          ],
+                          minY: 0,
+                          titlesData: FlTitlesData(
+                            show: true,
+                            topTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            rightTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            bottomTitles: AxisTitles(
+                              axisNameWidget: const Text(
+                                'Speed Over Your Runs',
+                                style: _dateTextStyle,
+                              ),
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 18,
+                                interval: 1,
+                              ),
+                            ),
+                            leftTitles: AxisTitles(
+                              axisNameSize: 20,
+                              axisNameWidget: const Padding(
+                                padding: EdgeInsets.only(bottom: 10.0),
+                                child: Text('Your Speed'),
+                              ),
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                interval: 1,
+                                reservedSize: 40,
+                              ),
+                            ),
+                          ),
+                          gridData: FlGridData(
+                            show: true,
+                            drawVerticalLine: true,
+                            horizontalInterval: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
             floatingActionButton: const FABBottomSheetButton(),
