@@ -6,10 +6,9 @@ import 'package:latlong2/latlong.dart';
 
 import '../functions/ai.dart';
 
-
-
 class DatabaseManager {
   static String nullDbError = "Please Sign in and out, there was a User error!";
+
   static void addNewRunLocation(
       String locationName, Map<String, dynamic> data, double speed) {
     User user = FirebaseAuth.instance.currentUser!;
@@ -76,7 +75,8 @@ class DatabaseManager {
     String? userEmail = user.email;
     if (userEmail == null) {
       throw nullDbError;
-    }    SetOptions options = SetOptions(merge: true);
+    }
+    SetOptions options = SetOptions(merge: true);
     List<double> speeds;
     FirebaseFirestore.instance
         .collection("Users")
@@ -101,7 +101,6 @@ class DatabaseManager {
     String? userEmail = user.email;
     if (userEmail == null) {
       throw nullDbError;
-
     }
     List<double> speeds;
     FirebaseFirestore.instance
@@ -120,12 +119,10 @@ class DatabaseManager {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw nullDbError;
-
     }
     String? userEmail = user.email;
     if (userEmail == null) {
       throw nullDbError;
-
     }
     SetOptions options = SetOptions(merge: true);
     List<double> speeds;
