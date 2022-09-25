@@ -101,6 +101,5 @@ class DatabaseManager {
     await FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
       returnData = value["history"];
     });
-    return returnData;
   }
 }

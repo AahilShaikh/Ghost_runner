@@ -19,14 +19,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Map<String, String> display = {};
-
   @override
   void initState() {
     super.initState();
     checkLocationPermissions(context);
-    DatabaseManager.getAdvancedRuns();
   }
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -94,8 +91,7 @@ class _HomePageState extends State<HomePage> {
                                 const Spacer(),
                                 Text("Your Last run Distance is:  ${display["distance"].toString()}"),
                                 const Spacer(),
-                                Text("Did you beat the ai? ${display["Your are ahead"].toString()}"),
-                                const Spacer(),
+                                 Text("Did you beat the ai? ${display["Your are ahead"].toString()}"),
                               ],
                             ))
                       ],
