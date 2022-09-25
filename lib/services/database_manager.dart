@@ -4,8 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../functions/ai.dart';
-
 class DatabaseManager {
   static String nullDbError = "Please Sign in and out, there was a User error!";
 
@@ -26,7 +24,6 @@ class DatabaseManager {
     List<String> locations = [];
     String userEmail = nullCheckEmail();
     FirebaseFirestore.instance.collection("Users").doc(userEmail).collection("RunLocations").get().then((value) => {
-          // TODO change this for each is slow!!!!!!
           value.docs.forEach((element) {
             locations.add(element.id);
           })
@@ -52,18 +49,19 @@ class DatabaseManager {
   static void updateSpeed(double speed) {
     String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
-    List<double> speeds;
+    List<dynamic> speeds;
     FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
-      Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+      Map<String, dynamic> data = (value.data() ?? {});
       speeds = data['speeds'] ?? [];
       speeds.add(speed);
+      print("updated speed list: $speeds");
       FirebaseFirestore.instance.collection("Users").doc(userEmail).set({"speeds": speeds}, options);
     });
   }
 
   static void getSpeeds(double speed) {
     String userEmail = nullCheckEmail();
-    List<double> speeds;
+    List<dynamic> speeds;
     FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
       Map<String, dynamic> data = value.data() as Map<String, dynamic>;
       speeds = data['speeds'] ?? [];
@@ -84,13 +82,15 @@ class DatabaseManager {
     return userEmail;
   }
 
-  static void addHistoryData(Map<String, dynamic> data) {
+  static void addHistoryData(Map<String, dynamic> newData) {
     String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
     FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
-      Map<String, dynamic> data = value.data() as Map<String, dynamic>;
-      List<dynamic> history = data['history'];
-      history.add(data);
+      Map<String, dynamic> data = (value.data() ?? {});
+      List<dynamic> history = data['history'] ?? [];
+      history.add(newData);
+      print("data that should have been added: $newData");
+      print("updated history data: $history");
       FirebaseFirestore.instance.collection("Users").doc(userEmail).set({"history": history}, options);
     });
   }
@@ -99,7 +99,7 @@ class DatabaseManager {
     String userEmail = nullCheckEmail();
     List<dynamic> returnData = [];
     await FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
-      returnData = value["history"];
+      returnData = value["history"] ?? [];
     });
     return returnData;
   }

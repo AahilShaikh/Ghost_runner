@@ -131,6 +131,10 @@ class _RacePageState extends State<RacePage> {
                                   child: SizedBox(height: 100, width: 100, child: Center(child: Text("You Lose!!", style: TextStyle(fontSize: 20)))),
                                 );
                               });
+                          Future.delayed(const Duration(seconds: 2)).then((value) {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          });
                         });
                       }
                       return MarkerLayer(
@@ -172,6 +176,10 @@ class _RacePageState extends State<RacePage> {
                                       )),
                                 );
                               });
+                          Future.delayed(const Duration(seconds: 2)).then((value) {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          });
                         });
                       }
                       return MarkerLayer(

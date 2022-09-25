@@ -24,9 +24,12 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
   //Run name
   late final TextEditingController _runNameController;
 
-  double distanceTraveled = 0;
   Position? prevPos;
   late final StreamSubscription sub;
+  double distance = 0;
+  double speed = 0;
+
+  late Timer timer;
 
   @override
   void initState() {
@@ -37,17 +40,20 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
         prevPos = event;
         return;
       }
-      if (mounted) {
-        setState(() {
-          distanceTraveled += (calcDistanceAsFeet(LatLng(prevPos!.latitude, prevPos!.longitude), LatLng(event.latitude, event.longitude))) / 5280;
-        });
-      }
+    });
+
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        distance = (Path.from(widget.track.keys).distance / 1609.0);
+        speed = ((distance / widget.stopwatch.elapsedMilliseconds) * 3600000);
+      });
     });
   }
 
   @override
   void dispose() {
     sub.cancel();
+    timer.cancel();
     super.dispose();
   }
 
@@ -77,7 +83,7 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                         "Speed (mph):",
                         style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
                       ),
-                      Text(((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6).toStringAsFixed(3))
+                      Text(speed.toStringAsFixed(3))
                     ],
                   ),
                 ),
@@ -116,17 +122,18 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                                   ActionButton(
                                     child: const Text('Finish Run'),
                                     onPressed: () {
-                                      final Path smoothedPath = Path.from(widget.track.keys.toList());
+                                      // final Path smoothedPath = Path.from(widget.track.keys.toList());
 
                                       DatabaseManager.addNewRunLocation(
                                           _runNameController.text,
                                           {
-                                            "Location Data": latlngToGeoPoint(smoothedPath.equalize(5, smoothPath: true).coordinates),
+                                            "Location Data": latlngToGeoPoint(widget.track.keys.toList()),
                                             "elapsed_time_intervals": widget.track.values.toList(),
                                             'name': _runNameController.text,
                                           },
-                                          ((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6), distanceTraveled);
-                                      
+                                          speed,
+                                          distance);
+
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     },
@@ -166,7 +173,7 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                   "Miles traveled:",
                   style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
                 ),
-                Text(distanceTraveled.toStringAsFixed(3))
+                Text(distance.toStringAsFixed(3))
               ],
             ),
           ),

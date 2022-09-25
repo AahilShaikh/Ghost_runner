@@ -43,9 +43,7 @@ class SpeedLineChartState extends State<SpeedLineChart> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  const SizedBox(
-                    height: 37,
-                  ),
+                  const Spacer(flex: 2,),
                   const Text(
                     'Running Data',
                     style: TextStyle(
@@ -54,9 +52,7 @@ class SpeedLineChartState extends State<SpeedLineChart> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(
-                    height: 4,
-                  ),
+                  const Spacer(),
                   const Text(
                     'Average Speed',
                     style: TextStyle(
@@ -67,10 +63,9 @@ class SpeedLineChartState extends State<SpeedLineChart> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(
-                    height: 37,
-                  ),
+                  const Spacer(),
                   Expanded(
+                    flex: 50,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 16.0, left: 6.0),
                       child: LineChart(
@@ -109,9 +104,7 @@ class SpeedLineChartState extends State<SpeedLineChart> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const Spacer(),
                 ],
               ),
             ],

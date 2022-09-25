@@ -25,9 +25,12 @@ class RacePanel extends StatefulWidget {
 }
 
 class _RacePanelState extends State<RacePanel> {
-  double distanceTraveled = 0;
   Position? prevPos;
   late final StreamSubscription sub;
+
+  double distance = 0;
+  double speed = 0;
+  late Timer timer;
 
   @override
   void initState() {
@@ -37,17 +40,20 @@ class _RacePanelState extends State<RacePanel> {
         prevPos = event;
         return;
       }
-      if (mounted) {
-        setState(() {
-          distanceTraveled += (calcDistanceAsFeet(LatLng(prevPos!.latitude, prevPos!.longitude), LatLng(event.latitude, event.longitude))) / 5280;
-        });
-      }
+    });
+
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        distance = (Path.from(widget.track.keys).distance / 1609.0);
+        speed = ((distance / widget.stopwatch.elapsedMilliseconds) * 3600000);
+      });
     });
   }
 
   @override
   void dispose() {
     sub.cancel();
+    timer.cancel();
     super.dispose();
   }
 
@@ -77,7 +83,7 @@ class _RacePanelState extends State<RacePanel> {
                         "Speed (mph):",
                         style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
                       ),
-                      Text(((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6).toStringAsFixed(3))
+                      Text(speed.toStringAsFixed(3))
                     ],
                   ),
                 ),
@@ -140,7 +146,7 @@ class _RacePanelState extends State<RacePanel> {
                       "Miles traveled:",
                       style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
                     ),
-                    Text(distanceTraveled.toStringAsFixed(3))
+                    Text(distance.toStringAsFixed(3))
                   ],
                 ),
               ),
@@ -176,11 +182,11 @@ class _RacePanelState extends State<RacePanel> {
                                   ActionButton(
                                     child: const Text('End run'),
                                     onPressed: () {
-                                      DatabaseManager.updateSpeed(((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6));
+                                      DatabaseManager.updateSpeed(speed);
                                       DatabaseManager.addHistoryData({
                                         "location": widget.locationName,
-                                        "speed": ((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6),
-                                        "distanceTraveled": distanceTraveled,
+                                        "speed": speed,
+                                        "distanceTraveled": distance,
                                       });
                                       Navigator.pop(context);
                                       Navigator.pop(context);

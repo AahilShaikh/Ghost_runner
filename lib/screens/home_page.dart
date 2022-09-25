@@ -80,18 +80,25 @@ class _HomePageState extends State<HomePage> {
                   List<dynamic> history = [];
                   double averageSpeed = 0;
 
-                  if (!doc.exists) {
+                  if (doc.exists) {
                     List<dynamic> speeds = [];
-                    Map<String, dynamic> data = (doc.data() ?? {"error" : "no data"}) as Map<String, dynamic>;
+                    Map<String, dynamic> data = (doc.data() ?? {"error": "no data"}) as Map<String, dynamic>;
                     speeds = data['speeds'] ?? [];
                     double i = 0;
                     for (dynamic element in speeds) {
-                      speedData.add(FlSpot(i, double.parse(element)));
+                      if (element is String) {
+                        speedData.add(FlSpot(i, double.parse(element)));
+                      } else {
+                        speedData.add(FlSpot(i, element));
+                      }
                       i++;
                     }
                     int x = 0;
                     while (x < speeds.length || x == 6) {
-                      averageSpeed += double.parse(speeds[x]);
+                      if (speeds[x] is String) {
+                        averageSpeed += double.parse(speeds[x]);
+                      }
+                      averageSpeed += speeds[x];
                       x++;
                     }
                     averageSpeed /= i == 0 ? 1 : i;
@@ -149,27 +156,37 @@ class _HomePageState extends State<HomePage> {
                           height: 20,
                         ),
                         Expanded(child: SpeedLineChart(speedData)),
+                        const Text(
+                          'History',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                         Expanded(
                             flex: 1,
                             child: ListView.builder(
                               padding: const EdgeInsets.all(8),
                               itemCount: history.length,
                               itemBuilder: (BuildContext context, int index) {
+                                double distance = history[index]["distanceTraveled"] ?? 0.0;
+                                double speed = history[index]["speed"] ?? 0.0;
                                 return SizedBox(
                                   height: 150,
                                   child: Column(
                                     children: [
                                       const Spacer(),
-                                      const Text(
-                                        "Last Run Data",
-                                        style: TextStyle(fontSize: 16),
+                                      Text(
+                                        "Run ${index + 1}",
+                                        style: const TextStyle(fontSize: 16),
                                       ),
                                       const Spacer(),
-                                      Text(
-                                          "Your Last run  Distance is:  ${history[index]["distance"].toString()}"),
+                                      Text("Distance:  ${distance.toStringAsFixed(3)}"),
                                       const Spacer(),
-                                      Text(
-                                          "Your Last run speed is:  ${history[index]["speed"].toString()}"),
+                                      Text("Speed:  ${speed.toStringAsFixed(3)}"),
                                       const Spacer(),
                                     ],
                                   ),
