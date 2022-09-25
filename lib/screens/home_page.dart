@@ -17,16 +17,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> display = [{}];
+  List<dynamic> display = [{}];
 
   @override
   void initState() {
+    getData();
     super.initState();
     checkLocationPermissions(context);
   }
 
   getData() async {
     display = await DatabaseManager.getAdvancedRuns();
+    setState(() {});
   }
 
   @override
@@ -94,21 +96,24 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.all(8),
                               itemCount: display.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return Column(
-                                  children: [
-                                    const Spacer(),
-                                    const Text(
-                                      "Last Run Data",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                        "Your Last run  Distance is:  ${display[index]["distance"].toString()}"),
-                                    const Spacer(),
-                                    Text(
-                                        "Your Last run speed is:  ${display[index]["Speed"].toString()}"),
-                                    const Spacer(),
-                                  ],
+                                return SizedBox(
+                                  height: 150,
+                                  child: Column(
+                                    children: [
+                                      const Spacer(),
+                                      const Text(
+                                        "Last Run Data",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                          "Your Last run distance is:  ${display[index]["distance"].toString()}"),
+                                      const Spacer(),
+                                      Text(
+                                          "Your Last run speed is:  ${display[index]["speed"].toString()}"),
+                                      const Spacer(),
+                                    ],
+                                  ),
                                 );
                               },
                             ))
