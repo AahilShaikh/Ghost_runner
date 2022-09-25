@@ -1,13 +1,9 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:wwp_hacks_project/screens/login_page.dart';
 import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -73,9 +69,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ));
           } else {
-            //Todo add null handling
-            if(!isNull) {
-              throw "i love sucking cock";
+            //Todo add null handling also I do love sucking cock bitch
+            if (!isNull) {
+              throw "go suck a cock bomber killer";
             }
           }
           return Scaffold(
