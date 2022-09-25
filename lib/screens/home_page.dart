@@ -18,16 +18,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> display = [{}];
-
   @override
   void initState() {
     super.initState();
     checkLocationPermissions(context);
-  }
-
-  getData() async {
-    display = await DatabaseManager.getAdvancedRuns();
   }
 
   @override
@@ -40,8 +34,7 @@ class _HomePageState extends State<HomePage> {
                 color: Theme.of(context).backgroundColor,
                 child: Center(
                   child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).textTheme.headline1!.color as Color),
+                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
           }
@@ -69,17 +62,13 @@ class _HomePageState extends State<HomePage> {
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
                   },
                 ),
               ],
             ),
             body: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("Users")
-                    .doc(FirebaseAuth.instance.currentUser!.email)
-                    .snapshots(),
+                stream: FirebaseFirestore.instance.collection("Users").doc(FirebaseAuth.instance.currentUser!.email).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(
@@ -87,14 +76,17 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
                   DocumentSnapshot doc = snapshot.data as DocumentSnapshot;
-                  Map<String, dynamic> data =
-                      doc.data() as Map<String, dynamic>;
+                  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
                   List<dynamic> speeds = [];
                   speeds = data['speeds'];
                   List<FlSpot> speedData = [];
                   double i = 0;
                   for (dynamic element in speeds) {
-                    speedData.add(FlSpot(i, double.parse(element)));
+                    if (element is int) {
+                      speedData.add(FlSpot(i, element.toDouble()));
+                    } else {
+                      speedData.add(FlSpot(i, element));
+                    }
                     i++;
                   }
                   double averageSpeed = 0;
@@ -104,6 +96,8 @@ class _HomePageState extends State<HomePage> {
                     x++;
                   }
                   averageSpeed /= i;
+
+                  List<dynamic> history = data['history'] ?? [];
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -111,10 +105,10 @@ class _HomePageState extends State<HomePage> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
-                            decoration:
-                                BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white, boxShadow: [BoxShadow(offset: const Offset(0, 1), blurRadius: 5, spreadRadius: 5, color: Colors.grey[300]!)]),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white,
+                                boxShadow: [BoxShadow(offset: const Offset(0, 1), blurRadius: 5, spreadRadius: 5, color: Colors.grey[300]!)]),
                             child: Row(
                               children: [
                                 const Spacer(),
@@ -150,13 +144,15 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         Expanded(child: SpeedLineChart(speedData)),
                         Expanded(
                             flex: 1,
                             child: ListView.builder(
                               padding: const EdgeInsets.all(8),
-                              itemCount: display.length,
+                              itemCount: history.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Column(
                                   children: [
@@ -166,11 +162,9 @@ class _HomePageState extends State<HomePage> {
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     const Spacer(),
-                                    Text(
-                                        "Your Last run  Distance is:  ${display[index]["distance"].toString()}"),
+                                    Text("Your Last run  Distance is:  ${history[index]["distance"].toString()}"),
                                     const Spacer(),
-                                    Text(
-                                        "Your Last run speed is:  ${display[index]["Speed"].toString()}"),
+                                    Text("Your Last run speed is:  ${history[index]["Speed"].toString()}"),
                                     const Spacer(),
                                   ],
                                 );
