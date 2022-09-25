@@ -11,11 +11,12 @@ class DatabaseManager {
 
   static void addNewRunLocation(
       String locationName, Map<String, dynamic> data, double speed) {
-    User user = FirebaseAuth.instance.currentUser!;
+    String userEmail = nullCheckEmail();
+
     SetOptions options = SetOptions(merge: true);
     FirebaseFirestore.instance
         .collection("Users")
-        .doc(user.email)
+        .doc(userEmail)
         .collection("RunLocations")
         .doc(locationName)
         .set(data, options);
@@ -24,10 +25,10 @@ class DatabaseManager {
 
   static List<String> getRunningLocations() {
     List<String> locations = [];
-    User user = FirebaseAuth.instance.currentUser!;
+    String userEmail = nullCheckEmail();
     FirebaseFirestore.instance
         .collection("Users")
-        .doc(user.email)
+        .doc(userEmail)
         .collection("RunLocations")
         .get()
         .then((value) => {
@@ -41,14 +42,7 @@ class DatabaseManager {
   static Future<LinkedHashMap<LatLng, int>> getLocationData(
       String runName) async {
     LinkedHashMap<LatLng, int> result = LinkedHashMap();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw nullDbError;
-    }
-    String? userEmail = user.email;
-    if (userEmail == null) {
-      throw nullDbError;
-    }
+    String userEmail = nullCheckEmail();
     await FirebaseFirestore.instance
         .collection("Users")
         .doc(userEmail)
@@ -68,14 +62,7 @@ class DatabaseManager {
   }
 
   static void updateSpeed(double speed) {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw nullDbError;
-    }
-    String? userEmail = user.email;
-    if (userEmail == null) {
-      throw nullDbError;
-    }
+    String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
     List<double> speeds;
     FirebaseFirestore.instance
@@ -88,20 +75,13 @@ class DatabaseManager {
       speeds.add(speed);
       FirebaseFirestore.instance
           .collection("Users")
-          .doc(user.email)
+          .doc(userEmail)
           .set({"speeds": speeds}, options);
     });
   }
 
   static void getSpeeds(double speed) {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw nullDbError;
-    }
-    String? userEmail = user.email;
-    if (userEmail == null) {
-      throw nullDbError;
-    }
+    String userEmail = nullCheckEmail();
     List<double> speeds;
     FirebaseFirestore.instance
         .collection("Users")
@@ -115,7 +95,7 @@ class DatabaseManager {
     });
   }
 
-  static void sendAdvanceRuns(AIData backData) {
+  static String nullCheckEmail (){
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw nullDbError;
@@ -124,9 +104,13 @@ class DatabaseManager {
     if (userEmail == null) {
       throw nullDbError;
     }
+    return userEmail;
+  }
+  static void sendAdvanceRuns(AIData backData) {
+    String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
     List<double> speeds;
-    FirebaseFirestore.instance.collection("Users").doc(user.email).set({
+    FirebaseFirestore.instance.collection("Users").doc(userEmail).set({
       "advance_data": {
         "distance": backData.distance,
         "avgSpeed": backData.avgSpeed,
