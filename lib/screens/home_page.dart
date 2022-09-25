@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final Stream<QuerySnapshot> data =
       FirebaseFirestore.instance.collection('Updates').snapshots();
-  List<Map<String, dynamic>>? firestoreData;
+  List<int>? firestoreData;
   String? email = FirebaseAuth.instance.currentUser?.email;
   bool isNull = true;
 
@@ -25,16 +25,11 @@ class _HomePageState extends State<HomePage> {
         FirebaseFirestore.instance
             .collection("Users")
             .doc(email.toString())
-            .collection("RunLocations")
             .get()
             .then((everything) {
-          for (var data in everything.docs) {
+          for (int x = 0; x < everything["speed"].length; x++) {
             isNull = false;
-            firestoreData?.add({
-              "LocationData": data['Location Data'],
-              "elapsed_time_intervals": data['elapsed_time_intervals'],
-              "name": data['name'],
-            });
+            firestoreData?.add(everything["speed"][x]);
           }
           setState(() {});
         });
