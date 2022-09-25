@@ -9,7 +9,6 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:wwp_hacks_project/constants/palette.dart';
-import 'package:wwp_hacks_project/functions/ai.dart';
 
 import '../services/location.dart';
 import '../widgets/action_button.dart';
