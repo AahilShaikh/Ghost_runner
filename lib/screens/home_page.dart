@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                                           "Your Last run  Distance is:  ${history[index]["distance"].toString()}"),
                                       const Spacer(),
                                       Text(
-                                          "Your Last run speed is:  ${history[index]["Speed"].toString()}"),
+                                          "Your Last run speed is:  ${history[index]["speed"].toString()}"),
                                       const Spacer(),
                                     ],
                                   ),
