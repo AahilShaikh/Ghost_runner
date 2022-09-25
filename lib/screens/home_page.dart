@@ -34,7 +34,8 @@ class _HomePageState extends State<HomePage> {
                 color: Theme.of(context).backgroundColor,
                 child: Center(
                   child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).textTheme.headline1!.color as Color),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
           }
@@ -62,13 +63,17 @@ class _HomePageState extends State<HomePage> {
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const SignUpPage()));
                   },
                 ),
               ],
             ),
             body: StreamBuilder(
-                stream: FirebaseFirestore.instance.collection("Users").doc(FirebaseAuth.instance.currentUser!.email).snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection("Users")
+                    .doc(FirebaseAuth.instance.currentUser!.email)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(
@@ -115,7 +120,13 @@ class _HomePageState extends State<HomePage> {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: Colors.white,
-                                boxShadow: [BoxShadow(offset: const Offset(0, 1), blurRadius: 5, spreadRadius: 5, color: Colors.grey[300]!)]),
+                                boxShadow: [
+                                  BoxShadow(
+                                      offset: const Offset(0, 1),
+                                      blurRadius: 5,
+                                      spreadRadius: 5,
+                                      color: Colors.grey[300]!)
+                                ]),
                             child: Row(
                               children: [
                                 const Spacer(),
@@ -143,7 +154,8 @@ class _HomePageState extends State<HomePage> {
                                           style: TextStyle(fontSize: 8),
                                           textAlign: TextAlign.center,
                                         ),
-                                        Text("${averageSpeed.toStringAsFixed(3)} mph")
+                                        Text(
+                                            "${averageSpeed.toStringAsFixed(3)} mph")
                                       ],
                                     ),
                                   ),
