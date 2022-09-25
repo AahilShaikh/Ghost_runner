@@ -17,14 +17,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Stream<QuerySnapshot> data = FirebaseFirestore.instance.collection('Updates').snapshots();
+  final Stream<QuerySnapshot> data =
+      FirebaseFirestore.instance.collection('Updates').snapshots();
   List<Map<String, dynamic>>? firestoreData;
   String? email = FirebaseAuth.instance.currentUser?.email;
 
   void checkData() {
     try {
       if (email != null) {
-        FirebaseFirestore.instance.collection("Users").doc(email.toString()).collection("RunLocations").get().then((everything) {
+        FirebaseFirestore.instance
+            .collection("Users")
+            .doc(email.toString())
+            .collection("RunLocations")
+            .get()
+            .then((everything) {
           for (var data in everything.docs) {
             firestoreData?.add({
               "LocationData": data['LocationData'],
@@ -60,9 +66,13 @@ class _HomePageState extends State<HomePage> {
                 color: Theme.of(context).backgroundColor,
                 child: Center(
                   child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).textTheme.headline1!.color as Color),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
+          } else if (firestoreData![0]['LocationData'] == null) {
+            //Todo add null handling
+            throw "Implement null handling your lazy fuck";
           }
           return Scaffold(
             appBar: AppBar(
@@ -75,7 +85,8 @@ class _HomePageState extends State<HomePage> {
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const SignUpPage()));
                   },
                 ),
               ],
