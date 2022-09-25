@@ -9,6 +9,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:wwp_hacks_project/constants/palette.dart';
+import 'package:wwp_hacks_project/widgets/race_panel.dart';
 
 import '../services/location.dart';
 import '../widgets/action_button.dart';
@@ -42,7 +43,7 @@ class _RacePageState extends State<RacePage> {
   //Run name
   late final TextEditingController _runNameController;
 
-  late final Stopwatch timer;
+  late final Stopwatch stopwatch;
 
   double distanceTraveled = 0;
   int currentIndexOnPath = 0;
@@ -69,8 +70,8 @@ class _RacePageState extends State<RacePage> {
     currentLocationSubscription = currentLocationStream.listen((Position? pos) {});
 
     _runNameController = TextEditingController();
-    timer = Stopwatch();
-    timer.start();
+    stopwatch = Stopwatch();
+    stopwatch.start();
   }
 
   @override
@@ -85,95 +86,9 @@ class _RacePageState extends State<RacePage> {
           }
           Position initialPos = snapshot.data as Position;
           return SlidingUpPanel(
+            maxHeight: 200,
               borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-              panel: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          const Text(
-                            "Your Progress",
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(32, 16, 0, 0),
-                            child: LinearPercentIndicator(
-                              width: 140.0,
-                              lineHeight: 14.0,
-                              percent: currentIndexOnPath / (widget.ghostData.length - 1),
-                              backgroundColor: Colors.grey,
-                              progressColor: lightGreen,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 16, 32, 0),
-                        child: AlternateActionButton(
-                            child: Row(
-                              children: const [
-                                Text("Cancel"),
-                                Icon(
-                                  Icons.navigate_next_sharp,
-                                  color: Colors.white,
-                                )
-                              ],
-                            ),
-                            onPressed: () {
-                              currentLocationSubscription.pause();
-                              timer.stop();
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return Dialog(
-                                      child: SizedBox(
-                                        height: MediaQuery.of(context).size.height / 3,
-                                        width: MediaQuery.of(context).size.width / 2,
-                                        child: Column(
-                                          children: [
-                                            const Text("Enter Run Name"),
-                                            Expanded(
-                                              child: TextField(
-                                                controller: _runNameController,
-                                              ),
-                                            ),
-                                            ActionButton(
-                                              child: const Text('Finish Run'),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                            TextButton(
-                                              child: const Text('Cancel'),
-                                              onPressed: () {
-                                                currentLocationSubscription.resume();
-                                                timer.start();
-                                                Navigator.of(context).pop();
-                                              },
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            }),
-                      )
-                    ],
-                  ),
-                  Text('Admin Panel'),
-                  Expanded(
-                    child: TextField(
-                      onChanged: (String s) {
-                        error = int.parse(s);
-                      },
-                    ),
-                  )
-                ],
-              ),
+              panel: RacePanel(path, stopwatch, currentLocationStream),
               body: FlutterMap(
                 options: MapOptions(
                   center: LatLng(initialPos.latitude, initialPos.longitude),
@@ -192,7 +107,7 @@ class _RacePageState extends State<RacePage> {
                         if (snapshot.data != null) {
                           Position data = snapshot.data as Position;
                           LatLng point = LatLng(data.latitude, data.longitude);
-                          path[point] = timer.elapsedMilliseconds;
+                          path[point] = stopwatch.elapsedMilliseconds;
                         }
                         return PolylineLayer(
                           polylineCulling: true,

@@ -4,25 +4,25 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
-import '../services/database_manager.dart';
+import '../constants/palette.dart';
 import '../services/location.dart';
 import 'action_button.dart';
+import 'alternate_action_button.dart';
 
-class AddNewRunPanel extends StatefulWidget {
+class RacePanel extends StatefulWidget {
   final LinkedHashMap<LatLng, int> track;
   final Stopwatch stopwatch;
   final Stream<Position> dataStream;
 
-  const AddNewRunPanel(this.track, this.stopwatch, this.dataStream, {Key? key}) : super(key: key);
+  const RacePanel(this.track, this.stopwatch, this.dataStream, {Key? key}) : super(key: key);
 
   @override
-  State<AddNewRunPanel> createState() => _AddNewRunPanelState();
+  State<RacePanel> createState() => _RacePanelState();
 }
 
-class _AddNewRunPanelState extends State<AddNewRunPanel> {
-  //Run name
-  late final TextEditingController _runNameController;
+class _RacePanelState extends State<RacePanel> {
 
   double distanceTraveled = 0;
   Position? prevPos;
@@ -31,7 +31,6 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
   @override
   void initState() {
     super.initState();
-    _runNameController = TextEditingController();
     sub = widget.dataStream.listen((event) {
       if (prevPos == null) {
         prevPos = event;
@@ -59,6 +58,7 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
         Row(
           children: [
             const Spacer(),
+            
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
               child: Container(
@@ -70,7 +70,7 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 15),
                   child: Column(
                     children: [
                       const Text(
@@ -85,11 +85,73 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
             ),
             const Spacer(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 16, 32, 0),
-              child: ActionButton(
+              padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(offset: const Offset(0, 1), blurRadius: 5, spreadRadius: 5, color: Colors.grey[300]!),
+                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Your Progress",
+                      style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(5, 5, 5, 15),
+                      child: LinearPercentIndicator(
+                        width: 140.0,
+                        lineHeight: 14.0,
+                        percent: 0.5,
+                        backgroundColor: Colors.grey,
+                        progressColor: lightGreen,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const Spacer(),
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Row(
+          children: [
+            const Spacer(),
+            Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(offset: const Offset(0, 1), blurRadius: 5, spreadRadius: 5, color: Colors.grey[300]!),
+                ],
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                child: Column(
+                  children: [
+                    const Text(
+                      "Miles traveled:",
+                      style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
+                    ),
+                    Text(distanceTraveled.toStringAsFixed(3))
+                  ],
+                ),
+              ),
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 40, 0),
+              child: AlternateActionButton(
                   child: Row(
                     children: const [
-                      Text("Done"),
+                      Text("Cancel"),
                       Icon(
                         Icons.navigate_next_sharp,
                         color: Colors.white,
@@ -107,20 +169,13 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                               width: MediaQuery.of(context).size.width / 2,
                               child: Column(
                                 children: [
-                                  const Text("Enter Run Name"),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _runNameController,
-                                    ),
+                                  const Text(
+                                    "Cancel Run?",
+                                    style: TextStyle(fontSize: 20),
                                   ),
                                   ActionButton(
-                                    child: const Text('Finish Run'),
+                                    child: const Text('End run'),
                                     onPressed: () {
-                                      DatabaseManager.addNewRunLocation(_runNameController.text, {
-                                        "Location Data": latlngToGeoPoint(widget.track.keys.toList()),
-                                        "elapsed_time_intervals": widget.track.values.toList(),
-                                        'name': _runNameController.text,
-                                      }, ((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6));
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     },
@@ -128,7 +183,7 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                                   TextButton(
                                     child: const Text('Cancel'),
                                     onPressed: () {
-                                      widget.stopwatch.stop();
+                                      widget.stopwatch.start();
                                       Navigator.of(context).pop();
                                     },
                                   )
@@ -140,28 +195,6 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                   }),
             )
           ],
-        ),
-        const SizedBox(height: 20,),
-        Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(offset: const Offset(0, 1), blurRadius: 5, spreadRadius: 5, color: Colors.grey[300]!),
-            ],
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-            child: Column(
-              children: [
-                const Text(
-                  "Miles traveled:",
-                  style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
-                ),
-                Text(distanceTraveled.toStringAsFixed(3))
-              ],
-            ),
-          ),
         ),
       ],
     );
