@@ -27,10 +27,8 @@ class _HomePageState extends State<HomePage> {
             .doc(email.toString())
             .get()
             .then((everything) {
-          for (int x = 0; x < everything["speed"].length; x++) {
             isNull = false;
-            firestoreData?.add(everything["speed"][x]);
-          }
+            firestoreData?.add(everything["speed"]);
           setState(() {});
         });
       } else {
