@@ -168,43 +168,63 @@ class _HomePageState extends State<HomePage> {
                           height: 20,
                         ),
                         Expanded(child: SpeedLineChart(speedData)),
-                        const Text(
-                          'History',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                        const SizedBox(height: 20,),
                         Expanded(
                             flex: 1,
-                            child: ListView.builder(
-                              padding: const EdgeInsets.all(8),
-                              itemCount: history.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                double distance = history[index]["distanceTraveled"] ?? 0.0;
-                                double speed = history[index]["speed"] ?? 0.0;
-                                return SizedBox(
-                                  height: 150,
-                                  child: Column(
-                                    children: [
-                                      const Spacer(),
-                                      Text(
-                                        "Run ${index + 1}",
-                                        style: const TextStyle(fontSize: 16),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                    boxShadow: [BoxShadow(offset: const Offset(0, 1), blurRadius: 5, spreadRadius: 5, color: Colors.grey[300]!)]
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      'History',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 2,
                                       ),
-                                      const Spacer(),
-                                      Text("Distance:  ${distance.toStringAsFixed(3)}"),
-                                      const Spacer(),
-                                      Text("Speed:  ${speed.toStringAsFixed(3)}"),
-                                      const Spacer(),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ))
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Expanded(
+                                      
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        padding: const EdgeInsets.all(8),
+                                        itemCount: history.length,
+                                        itemBuilder: (BuildContext context, int index) {
+                                          double distance = history[index]["distanceTraveled"] ?? 0.0;
+                                          double speed = history[index]["speed"] ?? 0.0;
+                                          return SizedBox(
+                                            height: 150,
+                                            child: Column(
+                                              children: [
+                                                const Spacer(),
+                                                Text(
+                                                  "Run ${index + 1}",
+                                                  style: const TextStyle(fontSize: 16),
+                                                ),
+                                                const Spacer(),
+                                                Text("Distance:  ${distance.toStringAsFixed(3)}"),
+                                                const Spacer(),
+                                                Text("Speed:  ${speed.toStringAsFixed(3)}"),
+                                                const Spacer(),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )),
+                            const SizedBox(height: 30,)
                       ],
                     ),
                   );
