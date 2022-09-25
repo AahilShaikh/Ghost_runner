@@ -121,12 +121,12 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 const Spacer(),
                                 const Padding(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(3.0),
                                   child: Text(
                                     "Welcome Back",
                                     style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 25,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 2,
                                     ),
