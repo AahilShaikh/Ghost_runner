@@ -10,9 +10,7 @@ import 'package:wakelock/wakelock.dart';
 import 'package:wwp_hacks_project/constants/palette.dart';
 import 'package:wwp_hacks_project/widgets/add_new_run_panel.dart';
 
-import '../services/database_manager.dart';
 import '../services/location.dart';
-import '../widgets/action_button.dart';
 
 class AddNewRunPage extends StatefulWidget {
   const AddNewRunPage({Key? key}) : super(key: key);

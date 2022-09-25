@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../constants/palette.dart';
 
 class AlternateActionButton extends StatefulWidget {
   final Widget child;

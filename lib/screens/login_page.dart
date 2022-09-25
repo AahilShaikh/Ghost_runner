@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:wwp_hacks_project/screens/sign_up.dart';
 
 import '../constants/palette.dart';
-import '../services/login_validators.dart';
 import '../widgets/action_button.dart';
 import 'home_page.dart';
 
