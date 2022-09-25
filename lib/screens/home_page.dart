@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
       FirebaseFirestore.instance.collection('Updates').snapshots();
   List<Map<String, dynamic>>? firestoreData;
   String? email = FirebaseAuth.instance.currentUser?.email;
+  bool isNull = true;
 
   void checkData() {
     try {
@@ -32,8 +33,9 @@ class _HomePageState extends State<HomePage> {
             .get()
             .then((everything) {
           for (var data in everything.docs) {
+            isNull = false;
             firestoreData?.add({
-              "LocationData": data['LocationData'],
+              "LocationData": data['Location Data'],
               "elapsed_time_intervals": data['elapsed_time_intervals'],
               "name": data['name'],
             });
@@ -70,9 +72,11 @@ class _HomePageState extends State<HomePage> {
                         Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
-          } else if (firestoreData![0]['LocationData'] == null) {
+          } else {
             //Todo add null handling
-            throw "Implement null handling your lazy fucking indian bitch. Go suck a cock and bomb a building as you should";
+            if(!isNull) {
+              throw "i love sucking cock";
+            }
           }
           return Scaffold(
             appBar: AppBar(
