@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                                 Text(
                                     "Did you beat the ai? ${diplay["ahead"].toString()}"),
                                 const Spacer(
-                                  flex: 2,
+                                  flex: 4,
                                 ),
                               ],
                             ))
