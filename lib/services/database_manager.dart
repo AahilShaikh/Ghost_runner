@@ -107,6 +107,7 @@ class DatabaseManager {
     }
     return userEmail;
   }
+  // TODO we need to implement my ai for this to work!
   static void sendAdvanceRuns(AIData backData) {
     String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
