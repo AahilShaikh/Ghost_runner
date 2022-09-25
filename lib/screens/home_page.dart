@@ -31,11 +31,11 @@ class _HomePageState extends State<HomePage> {
             .doc(email.toString())
             .get()
             .then((everything) {
-          isNull = false;
           for (int x = 0; x < everything["speed"].length; x++) {
             firestoreData.add(everything["speed"][x].toDouble());
           }
           for (int x = 0; x < firestoreData.length; x++) {
+            isNull = false;
             display.add(FlSpot(x.toDouble(), firestoreData[x]));
           }
           setState(() {});
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                           lineBarsData: [
                             LineChartBarData(
                               spots: display,
-                              isCurved: true,
+                              isCurved: false,
                               barWidth: 8,
                               color: Colors.purpleAccent,
                               belowBarData: BarAreaData(
@@ -173,7 +173,8 @@ class _HomePageState extends State<HomePage> {
                               return value == 1 ||
                                   value == 6 ||
                                   value == 4 ||
-                                  value == 5;
+                                  value == 5 ||
+                              value == 8;
                             },
                           ),
                         ),
