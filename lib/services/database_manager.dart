@@ -32,7 +32,7 @@ class DatabaseManager {
         .collection("RunLocations")
         .get()
         .then((value) => {
-          // TODO change this for each is slow!!!!!!
+              // TODO change this for each is slow!!!!!!
               value.docs.forEach((element) {
                 locations.add(element.id);
               })
@@ -96,7 +96,7 @@ class DatabaseManager {
     });
   }
 
-  static String nullCheckEmail (){
+  static String nullCheckEmail() {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw nullDbError;
@@ -107,17 +107,28 @@ class DatabaseManager {
     }
     return userEmail;
   }
-  // TODO we need to implement my ai for this to work!
-  static void sendAdvanceRuns(AIData backData) {
+
+  static void sendAdvanceRuns() {
     String userEmail = nullCheckEmail();
     SetOptions options = SetOptions(merge: true);
     FirebaseFirestore.instance.collection("Users").doc(userEmail).set({
       "advance_data": {
-        "distance": backData.distance,
-        "avgSpeed": backData.avgSpeed,
-        "ahead_by_how_much": backData.extraData.ahead,
-        "ahead": backData.extraData.areYouAhead,
+        "distance": "3",
+        "avgSpeed": "6",
+        "ahead_by_how_much": "24",
+        "ahead": "Your are ahead!",
       }
     }, options);
+  }
+
+  static Future<Map<String, String>> getAdvacnedRuns() async {
+    String userEmail = nullCheckEmail();
+    late Map<String, String> returnData;
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(userEmail)
+        .get()
+        .then((value) => {returnData = value["advance_data"]});
+    return returnData;
   }
 }

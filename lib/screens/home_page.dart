@@ -7,6 +7,8 @@ import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+import '../services/database_manager.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -15,10 +17,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Map<String, String> diplay = {};
+
   @override
   void initState() {
     super.initState();
     checkLocationPermissions(context);
+    DatabaseManager.getAdvacnedRuns();
   }
 
   @override
@@ -83,8 +88,28 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        LineChartSample1(speedData),
-                        //Todo add display widget here
+                        Expanded(child: LineChartSample1(speedData)),
+                        Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                const Spacer(),
+                                const Text(
+                                  "Last Run Data",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const Spacer(),
+                                Text(
+                                    "Your Last run  Distance is:  ${diplay["avgSpeed"].toString()}"),
+                                const Spacer(),
+                                Text(
+                                    "Your Last run Distance is:  ${diplay["distance"].toString()}"),
+                                const Spacer(),
+                                Text(
+                                    "Did you beat the ai? ${diplay["Your are ahead"].toString()}"),
+                                const Spacer(),
+                              ],
+                            ))
                       ],
                     ),
                   );

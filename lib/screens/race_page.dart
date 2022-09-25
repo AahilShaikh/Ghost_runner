@@ -10,6 +10,7 @@ import 'package:wakelock/wakelock.dart';
 import 'package:wwp_hacks_project/constants/palette.dart';
 import 'package:wwp_hacks_project/widgets/race_panel.dart';
 
+import '../services/database_manager.dart';
 import '../services/location.dart';
 
 class RacePage extends StatefulWidget {
@@ -156,6 +157,7 @@ class _RacePageState extends State<RacePage> {
                       if (currentLocation != null) {
                         point = LatLng(currentLocation.latitude, currentLocation.longitude);
                       }
+                      DatabaseManager.sendAdvanceRuns();
                       if (calcDistanceAsFeet(point, widget.track.last) < 20) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           showDialog(
