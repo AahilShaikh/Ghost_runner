@@ -95,9 +95,9 @@ class DatabaseManager {
     });
   }
 
-  static Future<List<Map<String, dynamic>>> getAdvancedRuns() async {
+  static Future<List<dynamic>> getAdvancedRuns() async {
     String userEmail = nullCheckEmail();
-    List<Map<String, dynamic>> returnData = [];
+    List<dynamic> returnData = [];
     await FirebaseFirestore.instance.collection("Users").doc(userEmail).get().then((value) {
       returnData = value["history"];
     });

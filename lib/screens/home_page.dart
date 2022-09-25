@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
                 "Ghost Trainer",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 32,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
