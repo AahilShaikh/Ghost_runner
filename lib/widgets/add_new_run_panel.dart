@@ -107,8 +107,8 @@ class _AddNewRunPanelState extends State<AddNewRunPanel> {
                                       DatabaseManager.addNewRunLocation(_runNameController.text, {
                                         "Location Data": latlngToGeoPoint(widget.track.keys.toList()),
                                         "elapsed_time_intervals": widget.track.values.toList(),
-                                        'name': _runNameController.text
-                                      });
+                                        'name': _runNameController.text,
+                                      }, ((distanceTraveled / widget.stopwatch.elapsedMilliseconds) * 3.6e+6));
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     },

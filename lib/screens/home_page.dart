@@ -70,10 +70,11 @@ class _HomePageState extends State<HomePage> {
                         Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
-          } else if (firestoreData![0]['LocationData'] == null) {
-            //Todo add null handling
-            throw "Implement null handling your lazy fucking indian bitch. Go suck a cock and bomb a building as you should";
-          }
+          } 
+          // else if (firestoreData![0]['LocationData'] == null) {
+          //   //Todo add null handling
+            
+          // }
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.transparent,
