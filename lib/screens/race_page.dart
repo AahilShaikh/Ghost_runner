@@ -124,6 +124,18 @@ class _RacePageState extends State<RacePage> {
                       LatLng ghostLocation = (snapshot.data ?? LatLng(0, 0)) as LatLng;
                       if (calcDistanceAsFeet(ghostLocation, widget.track.last) < 20) {
                         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                          double distance = (Path.from(widget.track).distance / 1609.0);
+                          double speed = (distance / stopwatch.elapsedMilliseconds) * 3600000;
+                          DatabaseManager.updateSpeed(speed);
+                          DatabaseManager.addHistoryData({
+                            "location": widget.locationName,
+                            "speed": speed,
+                            "distanceTraveled": distance,
+                          });
+                          Future.delayed(const Duration(seconds: 2)).then((value) {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          });
                           showDialog(
                               context: context,
                               builder: (context) {
@@ -131,10 +143,6 @@ class _RacePageState extends State<RacePage> {
                                   child: SizedBox(height: 100, width: 100, child: Center(child: Text("You Lose!!", style: TextStyle(fontSize: 20)))),
                                 );
                               });
-                          Future.delayed(const Duration(seconds: 2)).then((value) {
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                          });
                         });
                       }
                       return MarkerLayer(
@@ -161,6 +169,18 @@ class _RacePageState extends State<RacePage> {
                       }
                       if (calcDistanceAsFeet(point, widget.track.last) < 20) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
+                          double distance = (Path.from(widget.track).distance / 1609.0);
+                          double speed = (distance / stopwatch.elapsedMilliseconds) * 3600000;
+                          DatabaseManager.updateSpeed(speed);
+                          DatabaseManager.addHistoryData({
+                            "location": widget.locationName,
+                            "speed": speed,
+                            "distanceTraveled": distance,
+                          });
+                          Future.delayed(const Duration(seconds: 2)).then((value) {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          });
                           showDialog(
                               context: context,
                               builder: (context) {
@@ -176,10 +196,6 @@ class _RacePageState extends State<RacePage> {
                                       )),
                                 );
                               });
-                          Future.delayed(const Duration(seconds: 2)).then((value) {
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                          });
                         });
                       }
                       return MarkerLayer(

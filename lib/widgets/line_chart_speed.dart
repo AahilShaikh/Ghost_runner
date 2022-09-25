@@ -87,17 +87,12 @@ class SpeedLineChartState extends State<SpeedLineChart> {
                             topTitles: AxisTitles(
                               sideTitles: SideTitles(showTitles: false),
                             ),
-                            leftTitles: AxisTitles(
-                              sideTitles: leftTitles(),
-                            ),
                           ),
                           borderData: borderData,
                           lineBarsData: [
                             lineChartBarData1_1,
                           ],
                           minX: 0,
-                          maxX: 14,
-                          maxY: 4,
                           minY: 0,
                         ),
                         swapAnimationDuration: const Duration(milliseconds: 250),
@@ -113,22 +108,6 @@ class SpeedLineChartState extends State<SpeedLineChart> {
       ),
     );
   }
-
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color.fromARGB(255, 114, 158, 123),
-      fontWeight: FontWeight.bold,
-      fontSize: 14,
-    );
-    return Text(value.toString(), style: style, textAlign: TextAlign.center);
-  }
-
-  SideTitles leftTitles() => SideTitles(
-        getTitlesWidget: leftTitleWidgets,
-        showTitles: true,
-        interval: 1,
-        reservedSize: 40,
-      );
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
