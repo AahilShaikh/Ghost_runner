@@ -11,9 +11,30 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } on FirebaseException {
+    try {
+      await Firebase.initializeApp(
+          options: const FirebaseOptions(
+            iosClientId: "1:279080458713:ios:da7f92194c9d312701e1c8",
+            iosBundleId: "com.example.EkamGhai",
+            apiKey: "AIzaSyBly9Ka9Fv2g12AFGF6Yahn7deCO2nxvSQ",
+            appId: "1:796000883439:web:8121af0ad245b923d3c11a",
+            messagingSenderId: "1:796000883439:web:8121af0ad245b923d3c11a",
+            projectId: "stop-it-e1eae",
+          ));
+    } on FirebaseException {
+      try {
+        await Firebase.initializeApp();
+      } on FirebaseException {
+        throw 'firebase not initialized error';
+      }
+    }
+
+  }
   runApp(const App());
 }
 
@@ -37,7 +58,9 @@ class App extends StatelessWidget {
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ))),
-      home: FirebaseAuth.instance.currentUser != null ? const HomePage() : SignUpPage(),
+      home: FirebaseAuth.instance.currentUser != null
+          ? const HomePage()
+          : SignUpPage(),
     );
   }
 }

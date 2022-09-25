@@ -18,46 +18,75 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final Stream<QuerySnapshot> data =
       FirebaseFirestore.instance.collection('Updates').snapshots();
-  List<Map<String, dynamic>>? firestoreData;
+  List<Map<String, dynamic>> firestoreData = [];
   String? email = FirebaseAuth.instance.currentUser?.email;
-
+  bool data_exists = false;
   void checkData() {
     try {
       if (email != null) {
         FirebaseFirestore.instance
             .collection("Users")
-            .doc(email.toString())
+            .doc(email)
             .collection("RunLocations")
             .get()
             .then((everything) {
           for (var data in everything.docs) {
-            firestoreData?.add({
-              "LocationData": data['LocationData'],
+            firestoreData.add({
+              "LocationData": data['Location Data'],
               "elapsed_time_intervals": data['elapsed_time_intervals'],
               "name": data['name'],
             });
+            data_exists = true;
           }
-          setState(() {});
         });
       } else {
         throw 'Bad User Id, Please Sign Out';
+
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
       ));
     }
+    setState(() {});
   }
 
   @override
   void initState() {
+    checkData();
     super.initState();
     checkLocationPermissions(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (firestoreData != null){
+    if (data_exists) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: <Widget>[
+            IconButton(
+              color: Colors.black,
+              icon: const Icon(Icons.account_circle_sharp),
+              tooltip: 'Sign Out',
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const SignUpPage()));
+              },
+            ),
+          ],
+        ),
+        body: Center(
+          child: Column(
+            children: const [Text("fard")],
+          ),
+        ),
+        floatingActionButton: const FABBottomSheetButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      );
+    } else {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -70,46 +99,20 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 FirebaseAuth.instance.signOut();
                 Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const SignUpPage()));
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpPage()));
               },
             ),
           ],
         ),
         body: Center(
           child: Column(
-            children: const [
-              Text("fard")
-            ],
+            children: const [Text("No Running Data To Start A run Press +")],
           ),
         ),
         floatingActionButton: const FABBottomSheetButton(),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       );
     }
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: <Widget>[
-          IconButton(
-            color: Colors.black,
-            icon: const Icon(Icons.account_circle_sharp),
-            tooltip: 'Sign Out',
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const SignUpPage()));
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          children: const [],
-        ),
-      ),
-      floatingActionButton: const FABBottomSheetButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
   }
 }

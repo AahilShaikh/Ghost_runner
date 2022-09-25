@@ -73,6 +73,6 @@ class Ai {
 }
 
 double calcDistanceAsFeet(LatLng a, LatLng b) {
-  Distance distance = Distance();
+  Distance distance = const Distance();
   return distance.as(LengthUnit.Mile, a, b) * 5280;
 }

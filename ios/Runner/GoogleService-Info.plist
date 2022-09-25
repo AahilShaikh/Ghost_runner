@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>279080458713-hjf281v4nib8kmt67h7trdl9ghhtuuuo.apps.googleusercontent.com</string>
+	<string>279080458713-7pk4bb4svdl41vdgi8t1mpq6tlss3stn.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.279080458713-hjf281v4nib8kmt67h7trdl9ghhtuuuo</string>
+	<string>com.googleusercontent.apps.279080458713-7pk4bb4svdl41vdgi8t1mpq6tlss3stn</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBxRLimHHvK8lsxrrW1LBYgZdqS4zx1D2w</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.wwpHacksProject</string>
+	<string>com.example.EkamGhai</string>
 	<key>PROJECT_ID</key>
 	<string>wwp-hacks-project</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:279080458713:ios:fce13ab77d17af1a01e1c8</string>
+	<string>1:279080458713:ios:da7f92194c9d312701e1c8</string>
 </dict>
 </plist>
