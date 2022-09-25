@@ -17,13 +17,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Map<String, String> diplay = {};
+  Map<String, dynamic> diplay = {};
 
   @override
   void initState() {
     super.initState();
     checkLocationPermissions(context);
-    DatabaseManager.getAdvacnedRuns();
+    getData();
+  }
+
+  getData() async {
+    diplay = await DatabaseManager.getAdvacnedRuns();
+    setState(() {});
   }
 
   @override
@@ -106,8 +111,10 @@ class _HomePageState extends State<HomePage> {
                                     "Your Last run Distance is:  ${diplay["distance"].toString()}"),
                                 const Spacer(),
                                 Text(
-                                    "Did you beat the ai? ${diplay["Your are ahead"].toString()}"),
-                                const Spacer(),
+                                    "Did you beat the ai? ${diplay["ahead"].toString()}"),
+                                const Spacer(
+                                  flex: 2,
+                                ),
                               ],
                             ))
                       ],

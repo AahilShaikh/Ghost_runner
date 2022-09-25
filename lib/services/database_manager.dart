@@ -121,9 +121,9 @@ class DatabaseManager {
     }, options);
   }
 
-  static Future<Map<String, String>> getAdvacnedRuns() async {
+  static Future<Map<String, dynamic>> getAdvacnedRuns() async {
     String userEmail = nullCheckEmail();
-    late Map<String, String> returnData;
+    late Map<String, dynamic> returnData;
     await FirebaseFirestore.instance
         .collection("Users")
         .doc(userEmail)
