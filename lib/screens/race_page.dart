@@ -5,15 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:wwp_hacks_project/constants/palette.dart';
 import 'package:wwp_hacks_project/widgets/race_panel.dart';
 
 import '../services/location.dart';
-import '../widgets/action_button.dart';
-import '../widgets/alternate_action_button.dart';
 
 class RacePage extends StatefulWidget {
   final LinkedHashMap<LatLng, int> ghostData;
@@ -41,7 +38,6 @@ class _RacePageState extends State<RacePage> {
   final LinkedHashMap<LatLng, int> path = LinkedHashMap();
 
   //Run name
-  late final TextEditingController _runNameController;
 
   late final Stopwatch stopwatch;
 
@@ -69,7 +65,6 @@ class _RacePageState extends State<RacePage> {
     currentLocationStream = Geolocator.getPositionStream(locationSettings: locationSettings).asBroadcastStream();
     currentLocationSubscription = currentLocationStream.listen((Position? pos) {});
 
-    _runNameController = TextEditingController();
     stopwatch = Stopwatch();
     stopwatch.start();
   }
