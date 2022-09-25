@@ -124,6 +124,8 @@ class _HomePageState extends State<HomePage> {
                                 applyCutOffY: true,
                               ),
                               aboveBarData: BarAreaData(
+
+
                                 show: true,
                                 color: Colors.orange.withOpacity(0.6),
                                 cutOffY: cutOffYValue,
