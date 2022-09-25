@@ -79,9 +79,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ));
           } else {
-            //Todo add null handling also I do love sucking cock bitch
+            //Todo add null handling
             if (!isNull) {
-              throw "go suck a cock bomber killer";
+              throw "nope";
             }
           }
           return Scaffold(
