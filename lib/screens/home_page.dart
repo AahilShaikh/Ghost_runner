@@ -18,7 +18,8 @@ class _HomePageState extends State<HomePage> {
 
   final Stream<QuerySnapshot> data =
       FirebaseFirestore.instance.collection('Updates').snapshots();
-  List<int>? firestoreData;
+  List<double> firestoreData = [];
+  List<FlSpot> display = [];
   String? email = FirebaseAuth.instance.currentUser?.email;
   bool isNull = true;
 
@@ -31,7 +32,12 @@ class _HomePageState extends State<HomePage> {
             .get()
             .then((everything) {
           isNull = false;
-          firestoreData?.add(everything["speed"]);
+          for (int x = 0; x < everything["speed"].length; x++) {
+            firestoreData.add(everything["speed"][x].toDouble());
+          }
+          for (int x = 0; x < firestoreData.length; x++) {
+            display.add(FlSpot(x.toDouble(), firestoreData[x]));
+          }
           setState(() {});
         });
       } else {
@@ -105,20 +111,7 @@ class _HomePageState extends State<HomePage> {
                           lineTouchData: LineTouchData(enabled: false),
                           lineBarsData: [
                             LineChartBarData(
-                              spots: const [
-                                FlSpot(0, 4),
-                                FlSpot(1, 3.5),
-                                FlSpot(2, 4.5),
-                                FlSpot(3, 1),
-                                FlSpot(4, 4),
-                                FlSpot(5, 6),
-                                FlSpot(6, 6.5),
-                                FlSpot(7, 6),
-                                FlSpot(8, 4),
-                                FlSpot(9, 6),
-                                FlSpot(10, 6),
-                                FlSpot(11, 7),
-                              ],
+                              spots: display,
                               isCurved: true,
                               barWidth: 8,
                               color: Colors.purpleAccent,
@@ -163,13 +156,12 @@ class _HomePageState extends State<HomePage> {
                               axisNameSize: 20,
                               axisNameWidget: const Padding(
                                 padding: EdgeInsets.only(bottom: 8.0),
-                                child: Text('Value'),
+                                child: Text('Your Speed'),
                               ),
                               sideTitles: SideTitles(
                                 showTitles: true,
                                 interval: 1,
                                 reservedSize: 40,
-                                getTitlesWidget: leftTitleWidgets,
                               ),
                             ),
                           ),
@@ -196,13 +188,4 @@ class _HomePageState extends State<HomePage> {
           );
         });
   }
-}
-
-
-Widget leftTitleWidgets(double value, TitleMeta meta) {
-  const style = TextStyle(color: Colors.black, fontSize: 12.0);
-  return SideTitleWidget(
-    axisSide: meta.axisSide,
-    child: Text('\$ ${value + 0.5}', style: style),
-  );
 }
