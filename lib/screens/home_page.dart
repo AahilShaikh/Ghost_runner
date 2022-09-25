@@ -1,57 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:wwp_hacks_project/constants/palette.dart';
 import 'package:wwp_hacks_project/screens/sign_up.dart';
 import 'package:wwp_hacks_project/services/location.dart';
 import 'package:wwp_hacks_project/widgets/fab_button.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final bool isShowingMainData;
+  const HomePage({this.isShowingMainData = true, Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  static const double cutOffYValue = 500;
-
-  final Stream<QuerySnapshot> data =
-      FirebaseFirestore.instance.collection('Updates').snapshots();
-  List<double> firestoreData = [];
-  List<FlSpot> display = [];
-  String? email = FirebaseAuth.instance.currentUser?.email;
-  bool isNull = true;
-
-  void checkData() {
-    try {
-      if (email != null) {
-        FirebaseFirestore.instance
-            .collection("Users")
-            .doc(email.toString())
-            .get()
-            .then((everything) {
-          for (int x = 0; x < everything["speed"].length; x++) {
-            try {
-              firestoreData.add(everything["speed"][x].toDouble());
-            } catch (_) {}
-          }
-          for (int x = 0; x < firestoreData.length; x++) {
-            isNull = false;
-            display.add(FlSpot(x.toDouble(), firestoreData[x]));
-          }
-          setState(() {});
-        });
-      } else {
-        throw 'Bad User Id, Please Sign Out';
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-      ));
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -74,15 +38,9 @@ class _HomePageState extends State<HomePage> {
                 color: Theme.of(context).backgroundColor,
                 child: Center(
                   child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).textTheme.headline1!.color as Color),
+                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).textTheme.headline1!.color as Color),
                   ),
                 ));
-          } else {
-            //Todo add null handling
-            if (!isNull) {
-              throw "nope";
-            }
           }
           return Scaffold(
             appBar: AppBar(
@@ -95,95 +53,205 @@ class _HomePageState extends State<HomePage> {
                   tooltip: 'Sign Out',
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const SignUpPage()));
                   },
                 ),
               ],
             ),
-            body: Center(
-              child: Column(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 2.4,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 24),
-                      child: LineChart(
-                        LineChartData(
-                          lineTouchData: LineTouchData(enabled: false),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: display,
-                              isCurved: false,
-                              barWidth: 8,
-                              color: Colors.purpleAccent,
-                              belowBarData: BarAreaData(
-                                show: true,
-                                color: Colors.deepPurple.withOpacity(0.4),
-                                cutOffY: cutOffYValue,
-                                applyCutOffY: true,
-                              ),
-                              aboveBarData: BarAreaData(
-
-
-                                show: true,
-                                color: Colors.orange.withOpacity(0.6),
-                                cutOffY: cutOffYValue,
-                                applyCutOffY: true,
-                              ),
-                              dotData: FlDotData(
-                                show: false,
-                              ),
-                            ),
-                          ],
-                          minY: 0,
-                          titlesData: FlTitlesData(
-                            show: true,
-                            topTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            rightTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            bottomTitles: AxisTitles(
-                              axisNameWidget: const Text(
-                                'Speed Over Your Runs',
-                                style: _dateTextStyle,
-                              ),
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 18,
-                                interval: 1,
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                              axisNameSize: 20,
-                              axisNameWidget: const Padding(
-                                padding: EdgeInsets.only(bottom: 10.0),
-                                child: Text('Your Speed'),
-                              ),
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                interval: 1,
-                                reservedSize: 40,
-                              ),
-                            ),
-                          ),
-                          gridData: FlGridData(
-                            show: true,
-                            drawVerticalLine: true,
-                            horizontalInterval: 1,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+            body: StreamBuilder(
+                stream: FirebaseFirestore.instance.collection("Users").doc(FirebaseAuth.instance.currentUser!.email).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  }
+                  DocumentSnapshot doc = snapshot.data as DocumentSnapshot;
+                  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+                  List<dynamic> speeds = data['speeds'] ?? [];
+                  List<FlSpot> speedData = [];
+                  double i = 0;
+                  for (var element in speeds) {
+                    speedData.add(FlSpot(i, element));
+                    i++;
+                  }
+                  return LineChartSample1(speedData);
+                }),
             floatingActionButton: const FABBottomSheetButton(),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           );
         });
   }
+}
+
+class LineChartSample1 extends StatefulWidget {
+  const LineChartSample1(this.data, {Key? key}) : super(key: key);
+  final List<FlSpot> data;
+
+  @override
+  State<StatefulWidget> createState() => LineChartSample1State();
+}
+
+class LineChartSample1State extends State<LineChartSample1> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1.23,
+      child: Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+          gradient: LinearGradient(
+            colors: [
+              Color(0xff2c274c),
+              Color(0xff46426c),
+            ],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
+        ),
+        child: Stack(
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const SizedBox(
+                  height: 37,
+                ),
+                const Text(
+                  'Running Data',
+                  style: TextStyle(
+                    color: Color(0xff827daa),
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                const Text(
+                  'Average Speed',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 37,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 16.0, left: 6.0),
+                    child: LineChart(
+                      LineChartData(
+                        lineTouchData: LineTouchData(
+                          handleBuiltInTouches: true,
+                          touchTooltipData: LineTouchTooltipData(
+                            tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
+                          ),
+                        ),
+                        gridData: gridData,
+                        titlesData: FlTitlesData(
+                          bottomTitles: AxisTitles(
+                            sideTitles: bottomTitles,
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          leftTitles: AxisTitles(
+                            sideTitles: leftTitles(),
+                          ),
+                        ),
+                        borderData: borderData,
+                        lineBarsData: [
+                          lineChartBarData1_1,
+                        ],
+                        minX: 0,
+                        maxX: 14,
+                        maxY: 4,
+                        minY: 0,
+                      ),
+                      swapAnimationDuration: const Duration(milliseconds: 250),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      color: Color(0xff75729e),
+      fontWeight: FontWeight.bold,
+      fontSize: 14,
+    );
+    return Text(value.toString(), style: style, textAlign: TextAlign.center);
+  }
+
+  SideTitles leftTitles() => SideTitles(
+        getTitlesWidget: leftTitleWidgets,
+        showTitles: true,
+        interval: 1,
+        reservedSize: 40,
+      );
+
+  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      color: Color(0xff72719b),
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    );
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 10,
+      child: Text(value.toInt().toString(), style: style),
+    );
+  }
+
+  SideTitles get bottomTitles => SideTitles(
+        showTitles: true,
+        reservedSize: 32,
+        interval: 3,
+        getTitlesWidget: bottomTitleWidgets,
+      );
+
+  FlGridData get gridData => FlGridData(show: false);
+
+  FlBorderData get borderData => FlBorderData(
+        show: true,
+        border: const Border(
+          bottom: BorderSide(color: Color(0xff4e4965), width: 4),
+          left: BorderSide(color: Colors.transparent),
+          right: BorderSide(color: Colors.transparent),
+          top: BorderSide(color: Colors.transparent),
+        ),
+      );
+
+  LineChartBarData get lineChartBarData1_1 => LineChartBarData(
+        isCurved: true,
+        color: lightGreen,
+        barWidth: 8,
+        isStrokeCapRound: true,
+        dotData: FlDotData(show: true),
+        belowBarData: BarAreaData(show: false),
+        spots: widget.data,
+      );
 }
